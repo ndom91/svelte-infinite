@@ -1,4 +1,4 @@
-<img src="https://github.com/ndom91/svelte-infinite/raw/main/src/assets/SvelteLogo.svg" alt="Svelte Logo" width="128px" />
+<img align="right" src="https://github.com/ndom91/svelte-infinite/raw/main/src/assets/SvelteLogo.svg" alt="Svelte Logo" width="128px" />
 
 # Svelte Infinite
 
