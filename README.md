@@ -1,4 +1,4 @@
-<img src="" alt="Svelte Logo" width="128px" />
+<img src="/src/assets/SvelteLogo.svg" alt="Svelte Logo" width="128px" />
 
 # Svelte Infinite
 
@@ -25,7 +25,8 @@ Then, import and use the component in your Svelte project.
   const allItems = $state<number[]>($page.data.items)
   let pageNumber = $state(1)
 
-  // 1. You'll have to pass the InfiniteLoader a load function
+  // 1. You'll have to pass the InfiniteLoader component a load function
+  // to its `triggerLoad` prop.
   const loadMore = async () => {
     try {
       pageNumber += 1
@@ -69,13 +70,13 @@ Then, import and use the component in your Svelte project.
 
 <main class="container">
 
-    <!-- Here you wrap your items with the InfiniteLoader component -->
-    <InfiniteLoader triggerLoad={async () => await loadMore()}>
+    <!-- 2. Here you wrap your items with the InfiniteLoader component -->
+
+    <InfiniteLoader triggerLoad={loadMore}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
     </InfiniteLoader>
-
 </main>
 
 </script>

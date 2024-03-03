@@ -57,7 +57,7 @@
   </nav>
   <div class="content">
     <p><strong>Instructions</strong>: Just keep scrolling..</p>
-    <InfiniteLoader triggerLoad={async () => await loadMore()}>
+    <InfiniteLoader triggerLoad={loadMore}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
