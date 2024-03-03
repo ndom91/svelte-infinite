@@ -29,8 +29,6 @@
 </script>
 
 <script lang="ts">
-  import { dev } from "$app/environment"
-
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
     loopTimeout?: number
@@ -39,10 +37,6 @@
 
   const { triggerLoad, loopTimeout = 1000, loopMaxCalls = 5 } = $props<InfiniteLoaderProps>()
   const ERROR_INFINITE_LOOP = `Executed load function ${loopMaxCalls} or more times within a short period. Cooling off..`
-
-  if (dev) {
-    $inspect("LoaderStatus", status)
-  }
 
   // Avoid infinite loops
   class LoopTracker {

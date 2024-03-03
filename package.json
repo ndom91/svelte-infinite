@@ -1,16 +1,16 @@
 {
-  "name": "infinite-loader",
-  "description": "Infinite Loader for Svelte 5 + SvelteKit",
+  "name": "svelte-infinite",
+  "description": "Infinite scroll for Svelte 5 with Runes",
   "author": "ndom91 <yo@ndo.dev>",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
-  "homepage": "https://github.com/ndom91/svelte5-infinite-loader",
+  "homepage": "https://github.com/ndom91/svelte-infinite",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ndom91/svelte5-infinite-loader.git"
+    "url": "git+https://github.com/ndom91/svelte-infinite.git"
   },
   "bugs": {
-    "url": "https://github.com/ndom91/svelte5-infinite-loader/issues"
+    "url": "https://github.com/ndom91/svelte-infinite/issues"
   },
   "scripts": {
     "dev": "vite dev",
