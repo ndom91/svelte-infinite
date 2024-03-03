@@ -101,6 +101,28 @@
     }
   }
 
+  @media (max-width: 768px) {
+    nav {
+      padding-inline: 3rem;
+      h1 {
+        font-size: 2.2rem;
+      }
+    }
+  }
+
+  @media (max-width: 500px) {
+    nav {
+      padding-inline: 2rem;
+      h1 {
+        font-size: 1.8rem;
+      }
+      svg {
+        width: 32px !important;
+        height: 32px !important;
+      }
+    }
+  }
+
   .content {
     display: flex;
     flex-direction: column;
@@ -109,6 +131,7 @@
 
     p {
       font-size: 1.25rem;
+      margin-bottom: 1rem;
     }
   }
 

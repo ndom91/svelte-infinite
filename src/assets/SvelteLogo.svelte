@@ -34,4 +34,10 @@
     height: 64px;
     flex-shrink: 0;
   }
+  @media (max-width: 500px) {
+    svg {
+      width: 48px !important;
+      height: 48px !important;
+    }
+  }
 </style>

@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ url }: RequestEvent) => {
 
     // Randomly fail 10% of the time
     if (Math.random() < 0.1) {
-      return new Response(null, { status: 500 })
+      return new Response(null, { status: 500, statusText: "Randomly failing.." })
     }
 
     const items = Array(limit)
