@@ -71,11 +71,13 @@
     if (status === STATUS.COMPLETE) {
       return
     }
-    status = STATUS.LOADING
 
-    if (!loopTracker.coolingOff) {
+    if (!loopTracker.coolingOff && status !== STATUS.LOADING) {
       await triggerLoad()
     }
+
+    status = STATUS.LOADING
+
     loopTracker.track()
 
     if (status === STATUS.LOADING) {
