@@ -29,21 +29,21 @@
 </script>
 
 <script lang="ts">
-  const LOOP_CHECK_TIMEOUT = 1000
+  const LOOP_CHECK_TIMEOUT = 2000
   const LOOP_CHECK_MAX_CALLS = 5
   const ERROR_INFINITE_LOOP = `executed the callback function more than ${LOOP_CHECK_MAX_CALLS} times for a short time.`
+
   $inspect("status", status)
 
+  // Avoid infinite loops
   class LoopTracker {
     coolingOff = false
     timer: number | null = null
     count = 0
 
     track() {
-      // record track times
       this.count += 1
 
-      // throw warning if the times of continuous calls large than the maximum times
       if (this.count >= LOOP_CHECK_MAX_CALLS) {
         console.error(ERROR_INFINITE_LOOP)
 
@@ -63,7 +63,7 @@
   let intersectionTarget = $state<HTMLElement>()
   let observer = $state<IntersectionObserver>()
 
-  let showSpinner = $derived(status === STATUS.LOADING)
+  let showLoading = $derived(status === STATUS.LOADING)
   let showError = $derived(status === STATUS.ERROR)
   let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad)
   let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
@@ -73,15 +73,17 @@
       return
     }
 
-    if (!loopTracker.coolingOff && status !== STATUS.LOADING) {
+    status = STATUS.LOADING
+
+    // Skip loading if we're in infinite loop cool-off
+    if (!loopTracker.coolingOff) {
       await triggerLoad()
       loopTracker.track()
     }
 
     // @ts-expect-error - client can set status to complete inside triggerLoad
+    // via stateChanger.complete(), TS obviously doesn't know this.
     if (status !== STATUS.ERROR && status !== STATUS.COMPLETE) {
-      status = STATUS.LOADING
-
       if (status === STATUS.LOADING) {
         status = STATUS.READY
         isFirstLoad = false
@@ -115,7 +117,7 @@
 <div class="loader-wrapper">
   <slot />
 
-  {#if showSpinner}
+  {#if showLoading}
     <div class="loading">Loading...</div>
   {/if}
 
@@ -129,8 +131,8 @@
 
   {#if showError}
     <div class="error">
-      <div class="error-label">Oops, something went wrong</div>
-      <button class="error-btn" on:click={attemptLoad}> Retry </button>
+      <div class="label">Oops, something went wrong</div>
+      <button class="btn" on:click={attemptLoad}> Retry </button>
     </div>
   {/if}
 
@@ -145,31 +147,36 @@
     margin-block: 2rem;
 
     .loading {
+      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
     .no-results {
+      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
     .no-data {
+      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
     .error {
       display: flex;
       flex-direction: column;
+      gap: 1rem;
       font-size: 1.5rem;
+      margin-block: 1rem;
 
-      .error-label {
-        color: palevioletred;
+      .label {
+        color: firebrick;
       }
 
-      .error-btn {
+      .btn {
         color: white;
-        background-color: midnightblue;
-        padding-inline: 2rem;
-        padding-block: 1rem;
+        background-color: #333;
+        padding-inline: 1.5rem;
+        padding-block: 0.75rem;
         border-radius: 0.25rem;
         border: none;
       }

@@ -1,22 +1,23 @@
 <script lang="ts">
   import { page } from "$app/stores"
-  import { InfiniteLoader, stateChanger } from "../lib/index.js"
   import SvelteLogo from "../assets/SvelteLogo.svelte"
-  import "../global.css"
+  import { LOAD_LIMIT } from "$lib/utils"
+  import UserCard from "$lib/UserCard.svelte"
+  import { InfiniteLoader, stateChanger } from "../lib/index.js"
 
   const allItems = $state<number[]>($page.data.items)
-  const limitLoadCount = 10
   let pageNumber = $state(1)
 
   // Load more items on infinite scroll
   const loadMore = async () => {
     try {
       pageNumber += 1
-      const limit = limitLoadCount
-      const skip = limitLoadCount * (pageNumber - 1)
+      const limit = LOAD_LIMIT
+      const skip = LOAD_LIMIT * (pageNumber - 1)
 
-      // If there are less results than the first page, we are done
-      if (allItems.length < skip) {
+      // If there are less results on the first page than the limit,
+      // don't keep trying to fetch more. We're done.
+      if (allItems.length < LOAD_LIMIT) {
         stateChanger.complete()
         return
       }
@@ -48,6 +49,7 @@
       stateChanger.error()
     }
   }
+  $inspect("allItems", allItems)
 </script>
 
 <main class="container">
@@ -58,31 +60,32 @@
   <div class="content">
     <p><strong>Instructions</strong>: Just keep scrolling..</p>
     <InfiniteLoader triggerLoad={async () => await loadMore()}>
-      {#each allItems as data}
-        <div class="data-item">{data}</div>
+      {#each allItems as user (user.id)}
+        <UserCard {user} />
       {/each}
     </InfiniteLoader>
   </div>
 </main>
 
 <style>
-  body {
+  :global(body) {
     display: grid;
     place-items: center;
+    margin: 0 auto;
     width: 100%;
     max-width: 1024px;
-    max-height: 100dvh;
+    max-height: 100vh;
+    overflow: hidden;
   }
 
   .container {
     display: flex;
     flex-direction: column;
-    width: 960px;
-    margin: 0 auto;
+    width: min(95%, 960px);
+    margin: 2rem;
     background-color: #eee;
-    margin-block: 2rem;
-    height: 100%;
     border-radius: 1rem;
+    max-height: calc(100vh - 4rem);
   }
 
   nav {
@@ -103,7 +106,6 @@
   .content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
     padding: 2rem;
     overflow-y: scroll;
 

@@ -15,6 +15,5 @@
       "esnext"
     ],
     "module": "ESNext",
-    "moduleResolution": "NodeNext"
   }
 }
