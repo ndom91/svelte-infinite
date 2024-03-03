@@ -2,9 +2,9 @@
   "name": "svelte-infinite",
   "description": "Infinite scroll for Svelte 5 with Runes",
   "author": "ndom91 <yo@ndo.dev>",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
-  "homepage": "https://github.com/ndom91/svelte-infinite",
+  "homepage": "https://svelte-5-infinite.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ndom91/svelte-infinite.git"
