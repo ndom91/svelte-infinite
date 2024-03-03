@@ -97,6 +97,12 @@ The `stateChanger` import is an object with 4 methods on it:
 3. `stateChanger.complete()` - Designed to be called when you've reached the end of your list and there are no more items to fetch.
 4. `stateChanger.reset()` - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
+### ⚙️ Props
+
+- `triggerLoad: () => Promise<void>`- **required** - The function to call when the user scrolls to the bottom of the list.
+- `loopTimeout: number = 1000` - optional - If the `loopMaxCalls` is reached within this duration (in milliseconds), a cool down period is triggered.
+- `loopMaxCalls: number = 5`- optional - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
+
 ## 📝 License
 
 MIT
