@@ -32,6 +32,7 @@
   const LOOP_CHECK_TIMEOUT = 1000
   const LOOP_CHECK_MAX_CALLS = 5
   const ERROR_INFINITE_LOOP = `executed the callback function more than ${LOOP_CHECK_MAX_CALLS} times for a short time.`
+  $inspect("status", status)
 
   class LoopTracker {
     coolingOff = false
@@ -74,15 +75,17 @@
 
     if (!loopTracker.coolingOff && status !== STATUS.LOADING) {
       await triggerLoad()
+      loopTracker.track()
     }
 
-    status = STATUS.LOADING
+    // @ts-expect-error - client can set status to complete inside triggerLoad
+    if (status !== STATUS.ERROR && status !== STATUS.COMPLETE) {
+      status = STATUS.LOADING
 
-    loopTracker.track()
-
-    if (status === STATUS.LOADING) {
-      status = STATUS.READY
-      isFirstLoad = false
+      if (status === STATUS.LOADING) {
+        status = STATUS.READY
+        isFirstLoad = false
+      }
     }
   }
 
@@ -109,27 +112,71 @@
   })
 </script>
 
-<div class="h-full">
+<div class="loader-wrapper">
   <slot />
 
   {#if showSpinner}
-    <div class="pt-16 w-full text-lg text-center">Loading...</div>
+    <div class="loading">Loading...</div>
   {/if}
 
   {#if showNoResults}
-    <div class="pt-16 w-full text-lg text-center">No results</div>
+    <div class="no-results">No results</div>
   {/if}
 
   {#if showNoMore}
-    <div class="pt-16 w-full text-lg text-center">No more data</div>
+    <div class="no-data">No more data</div>
   {/if}
 
   {#if showError}
-    <div class="flex flex-col gap-4 items-center pt-16 w-full">
-      Oops, something went wrong
-      <button class="" on:click={attemptLoad}> Retry </button>
+    <div class="error">
+      <div class="error-label">Oops, something went wrong</div>
+      <button class="error-btn" on:click={attemptLoad}> Retry </button>
     </div>
   {/if}
 
-  <div class="h-20" bind:this={intersectionTarget} />
+  <div class="target" bind:this={intersectionTarget} />
 </div>
+
+<style>
+  .loader-wrapper {
+    display: grid;
+    width: 100%;
+    place-items: center;
+    margin-block: 2rem;
+
+    .loading {
+      font-size: 1.5rem;
+    }
+
+    .no-results {
+      font-size: 1.5rem;
+    }
+
+    .no-data {
+      font-size: 1.5rem;
+    }
+
+    .error {
+      display: flex;
+      flex-direction: column;
+      font-size: 1.5rem;
+
+      .error-label {
+        color: palevioletred;
+      }
+
+      .error-btn {
+        color: white;
+        background-color: midnightblue;
+        padding-inline: 2rem;
+        padding-block: 1rem;
+        border-radius: 0.25rem;
+        border: none;
+      }
+    }
+
+    .target {
+      height: 4rem;
+    }
+  }
+</style>
