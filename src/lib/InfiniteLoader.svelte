@@ -29,6 +29,8 @@
 </script>
 
 <script lang="ts">
+  import { onDestroy } from "svelte"
+
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
     loopTimeout?: number
@@ -95,26 +97,24 @@
     }
   }
 
-  // TODO: Observor not starting observation without
-  // some sort of action after 'observer.observe()'.
-  // 'return' unnecessary/wrong here in $effect
-  // @ts-expect-error
   $effect(() => {
-    if (!observer) {
-      if (intersectionTarget) {
-        observer = new IntersectionObserver(
-          (entries) => {
-            if (entries[0]?.isIntersecting) {
-              attemptLoad()
-            }
-          },
-          { rootMargin: "100px 0px 0px 0px" }
-        )
-        observer.observe(intersectionTarget)
-        return observer
-      }
+    if (observer || !intersectionTarget) return
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          attemptLoad()
+        }
+      },
+      { rootMargin: "100px 0px 0px 0px" }
+    )
+    observer.observe(intersectionTarget)
+  })
+
+  onDestroy(() => {
+    if (observer) {
+      observer.disconnect()
     }
-    return () => observer?.disconnect()
   })
 </script>
 
@@ -156,7 +156,6 @@
     display: grid;
     width: 100%;
     place-items: center;
-    margin-block: 2rem;
 
     .loading {
       margin-top: 1rem;
@@ -198,7 +197,7 @@
     }
 
     .target {
-      height: 4rem;
+      height: 1rem;
     }
   }
 </style>
