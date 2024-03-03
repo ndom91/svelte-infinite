@@ -29,11 +29,20 @@
 </script>
 
 <script lang="ts">
-  const LOOP_CHECK_TIMEOUT = 2000
-  const LOOP_CHECK_MAX_CALLS = 5
-  const ERROR_INFINITE_LOOP = `executed the callback function more than ${LOOP_CHECK_MAX_CALLS} times for a short time.`
+  import { dev } from "$app/environment"
 
-  $inspect("LoaderStatus", status)
+  type InfiniteLoaderProps = {
+    triggerLoad: () => Promise<void>
+    loopTimeout?: number
+    loopMaxCalls?: number
+  }
+
+  const { triggerLoad, loopTimeout = 1000, loopMaxCalls = 5 } = $props<InfiniteLoaderProps>()
+  const ERROR_INFINITE_LOOP = `Executed load function ${loopMaxCalls} or more times within a short period. Cooling off..`
+
+  if (dev) {
+    $inspect("LoaderStatus", status)
+  }
 
   // Avoid infinite loops
   class LoopTracker {
@@ -44,21 +53,19 @@
     track() {
       this.count += 1
 
-      if (this.count >= LOOP_CHECK_MAX_CALLS) {
+      if (this.count >= loopMaxCalls) {
         console.error(ERROR_INFINITE_LOOP)
 
         this.coolingOff = true
         this.timer = setTimeout(() => {
           this.coolingOff = false
           this.count = 0
-        }, LOOP_CHECK_TIMEOUT)
+        }, loopTimeout)
       }
     }
   }
 
   const loopTracker = new LoopTracker()
-
-  const { triggerLoad } = $props<{ triggerLoad: () => Promise<void> }>()
 
   let intersectionTarget = $state<HTMLElement>()
   let observer = $state<IntersectionObserver>()
@@ -69,7 +76,10 @@
   let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
 
   async function attemptLoad() {
-    if (status === STATUS.COMPLETE) {
+    // If we're complete, don't attempt to load again
+    // If we're not ready (i.e. in the middle of a fetch) don't attempt to load again
+    // However, if we're in an error state, allow the user to retry via btn click
+    if (status === STATUS.COMPLETE || (status !== STATUS.READY && status !== STATUS.ERROR)) {
       return
     }
 
@@ -100,11 +110,11 @@
       if (intersectionTarget) {
         observer = new IntersectionObserver(
           (entries) => {
-            if (entries[0].isIntersecting) {
+            if (entries[0]?.isIntersecting) {
               attemptLoad()
             }
           },
-          { threshold: 0.5 }
+          { rootMargin: "100px 0px 0px 0px" }
         )
         observer.observe(intersectionTarget)
         return observer
@@ -179,6 +189,9 @@
         padding-block: 0.75rem;
         border-radius: 0.25rem;
         border: none;
+      }
+      .btn:hover {
+        cursor: pointer;
       }
     }
 
