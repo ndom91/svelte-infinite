@@ -122,22 +122,30 @@
   <slot />
 
   {#if showLoading}
-    <div class="loading">Loading...</div>
+    <slot name="loading">
+      <div class="loading">Loading...</div>
+    </slot>
   {/if}
 
   {#if showNoResults}
-    <div class="no-results">No results</div>
+    <slot name="no-results">
+      <div class="no-results">No results</div>
+    </slot>
   {/if}
 
   {#if showNoMore}
-    <div class="no-data">No more data</div>
+    <slot name="no-data">
+      <div class="no-data">No more data</div>
+    </slot>
   {/if}
 
   {#if showError}
-    <div class="error">
-      <div class="label">Oops, something went wrong</div>
-      <button class="btn" on:click={attemptLoad}> Retry </button>
-    </div>
+    <slot name="error" {attemptLoad}>
+      <div class="error">
+        <div class="label">Oops, something went wrong</div>
+        <button class="btn" on:click={attemptLoad}> Retry </button>
+      </div>
+    </slot>
   {/if}
 
   <div class="target" bind:this={intersectionTarget} />

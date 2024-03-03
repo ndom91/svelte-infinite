@@ -103,6 +103,13 @@ The `stateChanger` import is an object with 4 methods on it:
 - `loopTimeout: number = 1000` - optional - If the `loopMaxCalls` is reached within this duration (in milliseconds), a cool down period is triggered.
 - `loopMaxCalls: number = 5`- optional - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
 
+### ⛳ Slots
+
+- `loading` - Markup shown while calling `triggerLoad` and waiting on response.
+- `no-results` - Markup shown when there are no results to display.
+- `no-data` - Markup shown when `stateChanger.complete()` is called, indicating the end of scroll.
+- `error` - Markup shown when there is an error. Slot has `attemptLoad` prop which is a function to call `triggerLoad` again, designed for a "Retry" button or similar.
+
 ## 📝 License
 
 MIT
