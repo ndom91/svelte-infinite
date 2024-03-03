@@ -6,11 +6,10 @@ Svelte Infinite Scroller designed for use in **Svelte 5** with runes
 
 - ⏰ Infinite Loop Detection
 - 📣 Control Loader State
-- 🔎 IntersectionObservor based
+- 🔎 `IntersectionObservor` based
 - ✨ Flexible
 
-> [!NOTE]
-> Initially inspired by [jonasgeiler/svelte-infinite-loading](https://github.com/jonasgeiler/svelte-infinite-loading)
+**Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
 ## 🏗️ Getting Started
 
@@ -24,7 +23,7 @@ pnpm install svelte-infinite
 
 3. The component should wrap your list of items, and `stateChanger` should be used in your `triggerLoad` function to interact with the internal state of the component, telling it whether you're out of data, ran into an error, etc. See the example below and [in this repository](https://github.com/ndom91/svelte-infinite/blob/main/src/routes/%2Bpage.svelte#L12-L50) for more details.
 
-## 🍍 Example 
+## 🍍 Example
 
 ```svelte
 <script lang="ts">
@@ -118,6 +117,11 @@ The `stateChanger` import is an object with 4 methods on it:
 - `no-results` - Shown when there are no results to display.
 - `no-data` - Shown when `stateChanger.complete()` is called, indicating the end of scroll.
 - `error` - Shown when there is an error. Slot has an `attemptLoad` prop passed to it which is the `triggerLoad` function, designed for a "Retry" button or similar.
+
+## 📦 Contributing
+
+- Initially inspired by [jonasgeiler/svelte-infinite-loading](https://github.com/jonasgeiler/svelte-infinite-loading)
+- Open to contributions, issues, and feedback.
 
 ## 📝 License
 
