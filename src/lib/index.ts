@@ -1,1 +1,3 @@
-// Reexport your entry components here
+import InfiniteLoader, { stateChanger } from './InfiniteLoader.svelte';
+
+export { InfiniteLoader, stateChanger };
