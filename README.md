@@ -1,21 +1,30 @@
-<img align="right" src="https://github.com/ndom91/svelte-infinite/raw/main/src/assets/SvelteLogo.svg" alt="Svelte Logo" width="128px" />
+<img align="right" src="https://raw.githubusercontent.com/ndom91/svelte-infinite/51683d459ae954a99e7c5c25817ed667678a0840/src/assets/SvelteLogo.svg" alt="Svelte Logo" width="128px" />
 
 # Svelte Infinite
 
-Svelte Infinite Scroller designed for use in Svelte 5 with runes.
+Svelte Infinite Scroller designed for use in **Svelte 5** with runes
 
-> Initially inspired by https://github.com/jonasgeiler/svelte-infinite-loading
+- ⏰ Infinite Loop Detection
+- 📣 Control Loader State
+- 🔎 IntersectionObservor based
+- ✨ Flexible
+
+> [!NOTE]
+> Initially inspired by [jonasgeiler/svelte-infinite-loading](https://github.com/jonasgeiler/svelte-infinite-loading)
 
 ## 🏗️ Getting Started
 
-First install `svelte-infinite` from npm.
+1. Install `svelte-infinite`
 
 ```bash
-# create a new project in the current directory
 pnpm install svelte-infinite
 ```
 
-Then, import and use the component in your Svelte project.
+2. Import both `InfiniteLoader` and `stateChanger` from `svelte-infinite`
+
+3. The component should wrap your list of items, and `stateChanger` should be used in your `triggerLoad` function to interact with the internal state of the component, telling it whether you're out of data, ran into an error, etc. See the example below and [in this repository](https://github.com/ndom91/svelte-infinite/blob/main/src/routes/%2Bpage.svelte#L12-L50) for more details.
+
+## 🍍 Example 
 
 ```svelte
 <script lang="ts">
@@ -88,7 +97,7 @@ The `InfiniteLoader` component is a wrapper around your items, which will trigge
 
 However, there is also a `stateChanger` export which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. See the `loadMore` function above or the example application in `/src/routes` in this repository.
 
-### `stateChanger`
+### stateChanger
 
 The `stateChanger` import is an object with 4 methods on it:
 
@@ -97,18 +106,18 @@ The `stateChanger` import is an object with 4 methods on it:
 3. `stateChanger.complete()` - Designed to be called when you've reached the end of your list and there are no more items to fetch.
 4. `stateChanger.reset()` - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
-### ⚙️ Props
+### Props
 
-- `triggerLoad: () => Promise<void>`- **required** - The function to call when the user scrolls to the bottom of the list.
+- `triggerLoad: () => Promise<void>` - **required** - The function to call when the user scrolls to the bottom of the list.
 - `loopTimeout: number = 1000` - optional - If the `loopMaxCalls` is reached within this duration (in milliseconds), a cool down period is triggered.
-- `loopMaxCalls: number = 5`- optional - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
+- `loopMaxCalls: number = 5` - optional - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
 
-### ⛳ Slots
+### Slots
 
-- `loading` - Markup shown while calling `triggerLoad` and waiting on response.
-- `no-results` - Markup shown when there are no results to display.
-- `no-data` - Markup shown when `stateChanger.complete()` is called, indicating the end of scroll.
-- `error` - Markup shown when there is an error. Slot has `attemptLoad` prop which is a function to call `triggerLoad` again, designed for a "Retry" button or similar.
+- `loading` - Shown while calling `triggerLoad` and waiting on a response.
+- `no-results` - Shown when there are no results to display.
+- `no-data` - Shown when `stateChanger.complete()` is called, indicating the end of scroll.
+- `error` - Shown when there is an error. Slot has an `attemptLoad` prop passed to it which is the `triggerLoad` function, designed for a "Retry" button or similar.
 
 ## 📝 License
 
