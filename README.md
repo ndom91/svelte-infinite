@@ -28,9 +28,10 @@ pnpm install svelte-infinite
 ```svelte
 <script lang="ts">
   import { InfiniteLoader, stateChanger } from "svelte-infinite"
+  import UserCard from "$components/UserCard.svelte"
 
   const LOAD_LIMIT = 20
-  const allItems = $state<number[]>($page.data.items)
+  const allItems = $state<{ id: number, data: string }[]>($page.data.items)
   let pageNumber = $state(1)
 
   // 1. You'll have to pass the InfiniteLoader component a load function
@@ -84,6 +85,8 @@ pnpm install svelte-infinite
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
+      <div slot="loading">Loading...</div>
+      <div slot="no-data">Thats it, no more users left!</div>
     </InfiniteLoader>
 </main>
 
