@@ -1,58 +1,101 @@
-# create-svelte
+<img src="" alt="Svelte Logo" width="128px" />
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+# Svelte Infinite
 
-Read more about creating a library [in the docs](https://kit.svelte.dev/docs/packaging).
+Svelte Infinite Scroller designed for use in Svelte 5 with runes.
 
-## Creating a project
+> Initially inspired by https://github.com/jonasgeiler/svelte-infinite-loading
 
-If you're seeing this, you've probably already done this step. Congrats!
+## 🏗️ Getting Started
+
+First install `svelte-infinite` from npm.
 
 ```bash
 # create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+pnpm install svelte-infinite
 ```
 
-## Developing
+Then, import and use the component in your Svelte project.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```svelte
+<script lang="ts">
+  import { InfiniteLoader, stateChanger } from "svelte-infinite"
 
-```bash
-npm run dev
+  const LOAD_LIMIT = 20
+  const allItems = $state<number[]>($page.data.items)
+  let pageNumber = $state(1)
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+  // 1. You'll have to pass the InfiniteLoader a load function
+  const loadMore = async () => {
+    try {
+      pageNumber += 1
+      const limit = LOAD_LIMIT
+      const skip = LOAD_LIMIT * (pageNumber - 1)
+
+      // If there are less results on the first page than the limit,
+      // don't keep trying to fetch more. We're done.
+      if (allItems.length < LOAD_LIMIT) {
+        stateChanger.complete()
+        return
+      }
+
+      const searchParams = new URLSearchParams({ limit, skip })
+
+      const dataResponse = await fetch(`/api/data?${searchParams}`)
+
+      if (!dataResponse.ok) {
+        stateChanger.error()
+        return
+      }
+      const data = await dataResponse.json()
+
+      if (data.items.length) {
+        allItems.push(...data.items)
+      }
+
+      // There are less items available than fit on one page,
+      // don't keep trying to fetch more. We're done.
+      if (allItems.length >= data.totalCount) {
+        stateChanger.complete()
+      } else {
+        stateChanger.loaded()
+      }
+    } catch (error) {
+      console.error(error)
+      stateChanger.error()
+    }
+  }
+</script>
+
+<main class="container">
+
+    <!-- Here you wrap your items with the InfiniteLoader component -->
+    <InfiniteLoader triggerLoad={async () => await loadMore()}>
+      {#each allItems as user (user.id)}
+        <UserCard {user} />
+      {/each}
+    </InfiniteLoader>
+
+</main>
+
+</script>
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+## ♾️ Usage
 
-## Building
+The `InfiniteLoader` component is a wrapper around your items, which will trigger the `triggerLoad` function when the user scrolls to the bottom of the list.
 
-To build your library:
+However, there is also a `stateChanger` export which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. See the `loadMore` function above or the example application in `/src/routes` in this repository.
 
-```bash
-npm run package
-```
+### `stateChanger`
 
-To create a production version of your showcase app:
+The `stateChanger` import is an object with 4 methods on it:
 
-```bash
-npm run build
-```
+1. `stateChanger.loaded()` - Designed to be called after a successful fetch.
+2. `stateChanger.error()` - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button.
+3. `stateChanger.complete()` - Designed to be called when you've reached the end of your list and there are no more items to fetch.
+4. `stateChanger.reset()` - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
-You can preview the production build with `npm run preview`.
+## 📝 License
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
+MIT

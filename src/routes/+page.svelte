@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from "$app/stores"
-  import SvelteLogo from "../assets/SvelteLogo.svelte"
-  import { LOAD_LIMIT } from "$lib/utils"
-  import UserCard from "$lib/UserCard.svelte"
-  import { InfiniteLoader, stateChanger } from "../lib/index.js"
+  import SvelteLogo from "$assets/SvelteLogo.svelte"
+  import { LOAD_LIMIT } from "$routes/lib/utils"
+  import UserCard from "$routes/lib/UserCard.svelte"
+  import { InfiniteLoader, stateChanger } from "$lib/index.js"
 
   const allItems = $state<number[]>($page.data.items)
   let pageNumber = $state(1)
@@ -22,10 +22,10 @@
         return
       }
 
-      const dataResponse = await fetch("/api/data", {
-        method: "POST",
-        body: JSON.stringify({ limit, skip })
-      })
+      const searchParams = new URLSearchParams({ limit, skip })
+
+      const dataResponse = await fetch(`/api/data?${searchParams}`)
+
       if (!dataResponse.ok) {
         stateChanger.error()
         return

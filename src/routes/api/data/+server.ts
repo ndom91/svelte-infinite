@@ -1,13 +1,14 @@
 import { json } from "@sveltejs/kit"
-import { loremIpsum } from "$lib/lorem"
-import { extractSnippet } from "$lib/utils"
+import { loremIpsum } from "$routes/lib/lorem"
+import { extractSnippet, LOAD_LIMIT } from "$routes/lib/utils"
 import type { RequestHandler, RequestEvent } from "./$types"
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export const POST: RequestHandler = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ url }: RequestEvent) => {
   try {
-    const { limit, skip } = await event.request.json()
+    const skip = Number(url.searchParams.get("skip") ?? "0")
+    const limit = Number(url.searchParams.get("limit") ?? String(LOAD_LIMIT))
 
     // Artificially wait a bit..
     await wait(1000)

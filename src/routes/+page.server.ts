@@ -1,7 +1,6 @@
 import type { PageServerLoad } from "./$types"
-import { loremIpsum } from "$lib/lorem"
-import { extractSnippet } from "$lib/utils"
-import { LOAD_LIMIT } from "$lib/utils"
+import { loremIpsum } from "$routes/lib/lorem"
+import { extractSnippet, LOAD_LIMIT } from "$routes/lib/utils"
 
 export const load: PageServerLoad = () => {
   // Initial page load data, i.e. first 20 items that are SSR-ed into the HTML
