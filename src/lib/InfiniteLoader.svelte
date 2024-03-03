@@ -33,7 +33,7 @@
   const LOOP_CHECK_MAX_CALLS = 5
   const ERROR_INFINITE_LOOP = `executed the callback function more than ${LOOP_CHECK_MAX_CALLS} times for a short time.`
 
-  $inspect("status", status)
+  $inspect("LoaderStatus", status)
 
   // Avoid infinite loops
   class LoopTracker {

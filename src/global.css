@@ -76,3 +76,34 @@ h6 {
   font-display: swap;
   font-weight: 600;
 }
+
+/* 
+ * Custom Scrollbar
+ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3c3b3b3b;
+  border-radius: 100vh;
+  transition: all 250ms ease-in-out;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #3c3b3b3b #00000000;
+  }
+}

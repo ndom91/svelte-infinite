@@ -38,7 +38,6 @@
 
       // There are less items available than fit on one page,
       // don't keep trying to fetch more. We're done.
-      console.log("afterLoadMore", { allItems: allItems.length, totalCount: data.totalCount })
       if (allItems.length >= data.totalCount) {
         stateChanger.complete()
       } else {
@@ -49,7 +48,6 @@
       stateChanger.error()
     }
   }
-  $inspect("allItems", allItems)
 </script>
 
 <main class="container">
