@@ -29,7 +29,7 @@
 </script>
 
 <script lang="ts">
-  import { onDestroy } from "svelte"
+  import { onMount, onDestroy } from "svelte"
 
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
@@ -104,7 +104,7 @@
     }
   }
 
-  $effect(() => {
+  onMount(() => {
     if (observer || !intersectionTarget) return
 
     const appliedIntersectionOptions = {
