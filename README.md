@@ -2,12 +2,19 @@
 
 # Svelte Infinite
 
+<p dir="auto">
+  <img src="https://img.shields.io/badge/typescript-black?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="NPM Version" src="https://img.shields.io/npm/v/svelte-infinite?style=for-the-badge&labelColor=black&color=black&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fsvelte-infinite">
+  <img alt="NPM Minzipped Size" src="https://img.shields.io/badge/13kb-size?style=for-the-badge&label=size&labelColor=black&color=black&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fsvelte-infinite">
+  <img alt="NPM Downloads" src="https://img.shields.io/npm/dm/svelte-infinite?style=for-the-badge&labelColor=black&color=black&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2Fsvelte-infinite">
+</p>
+
 Svelte Infinite Scroller designed for use in **Svelte 5** with runes
 
-- ⏰ Infinite Loop Detection
-- 📣 Control Loader State
-- 🔎 `IntersectionObservor` based
-- ✨ Flexible
+⏰ Infinite Loop Detection
+📣 Control Loader State
+🔎 `IntersectionObservor` based
+✨ Flexible
 
 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 

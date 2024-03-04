@@ -1,10 +1,20 @@
 {
   "name": "svelte-infinite",
   "description": "Infinite scroll for Svelte 5 with Runes",
-  "author": "ndom91 <yo@ndo.dev>",
+  "author": {
+    "name": "Nico Domino",
+    "email": "yo@ndo.dev",
+    "url": "https://ndo.dev"
+  },
   "version": "0.1.1",
   "license": "MIT",
   "homepage": "https://svelte-5-infinite.vercel.app",
+  "keywords": [
+    "infinite-loader",
+    "svelte",
+    "svelte5",
+    "sveltekit"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ndom91/svelte-infinite.git"
@@ -24,12 +34,9 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write ."
   },
-  "keywords": [
-    "infinite-loader",
-    "svelte",
-    "svelte5",
-    "sveltekit"
-  ],
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -64,8 +71,5 @@
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
     "vitest": "^1.3.1"
-  },
-  "svelte": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "type": "module"
+  }
 }
