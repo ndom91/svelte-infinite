@@ -56,7 +56,12 @@
     <SvelteLogo alt="Svelte Logo" />
   </nav>
   <div class="content">
-    <p><strong>Instructions</strong>: Just keep scrolling..</p>
+    <p>
+      <span><strong>Instructions</strong>: Just keep scrolling..</span>
+      <span>
+        <strong>Warning</strong>: 10% of requests will <span class="warning-text">fail</span>
+      </span>
+    </p>
     <InfiniteLoader triggerLoad={loadMore}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
@@ -101,28 +106,6 @@
     }
   }
 
-  @media (max-width: 768px) {
-    nav {
-      padding-inline: 3rem;
-      h1 {
-        font-size: 2.2rem;
-      }
-    }
-  }
-
-  @media (max-width: 500px) {
-    nav {
-      padding-inline: 2rem;
-      h1 {
-        font-size: 1.8rem;
-      }
-      svg {
-        width: 32px !important;
-        height: 32px !important;
-      }
-    }
-  }
-
   .content {
     display: flex;
     flex-direction: column;
@@ -132,6 +115,13 @@
     p {
       font-size: 1.25rem;
       margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .warning-text {
+      color: crimson;
     }
   }
 
@@ -148,5 +138,34 @@
     align-items: center;
     justify-content: center;
     gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    nav {
+      padding-inline: 3rem;
+      h1 {
+        font-size: 2.2rem;
+      }
+    }
+    .content p {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: start;
+    }
+  }
+
+  @media (max-width: 500px) {
+    nav {
+      padding-inline: 2rem;
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+    .content p {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: start;
+      font-size: 1rem;
+    }
   }
 </style>

@@ -50,4 +50,11 @@
       margin: 1rem;
     }
   }
+  @media (max-width: 768px) {
+    .container img {
+      width: 64px;
+      height: 64px;
+      margin: 0.5rem;
+    }
+  }
 </style>
