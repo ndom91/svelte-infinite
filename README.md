@@ -12,7 +12,6 @@
 [![](https://img.shields.io/npm/dm/svelte-infinite?style=for-the-badge&labelColor=black&color=black)](https://npmjs.org/packages/svelte-infinite)
 [![](https://img.shields.io/badge/demo-black?style=for-the-badge&logo=&logoColor=white&labelColor=black&color=black)](https://svelte-5-infinite.vercel.app)
 
-
 > Svelte Infinite Loader designed and rebuilt specifically for use in **Svelte 5** with runes
 
 ✨ Flexible  
@@ -40,7 +39,7 @@ yarn add svelte-infinite
   const allItems = $state([])
 
   const loadMore = async () => {
-    const res = fetch('...')
+    const res = fetch("...")
     const data = await jes.json()
     allItems.push(...data)
     stateChanger.loaded()
@@ -54,7 +53,7 @@ yarn add svelte-infinite
 </InfiniteLoader>
 ```
 
-The component should wrap your list of items, and `stateChanger` should be used in your `triggerLoad` function (and/or elsewhere) to interact with the internal state of the Loader component. You tell it whether you're out of data, ran into an error, etc. 
+The component should wrap your list of items, and `stateChanger` should be used in your `triggerLoad` function (and/or elsewhere) to interact with the internal state of the Loader component. You tell it whether you're out of data, ran into an error, etc.
 
 See the example below and [in this repository](https://github.com/ndom91/svelte-infinite/blob/main/src/routes/%2Bpage.svelte#L12-L50) for more details.
 
@@ -66,7 +65,7 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
   import UserCard from "$components/UserCard.svelte"
 
   const LOAD_LIMIT = 20
-  const allItems = $state<{ id: number, data: string }[]>($page.data.items)
+  const allItems = $state<{ id: number, body: string }[]>($page.data.items)
   let pageNumber = $state(1)
 
   // 1. You'll have to pass the InfiniteLoader component a load function
@@ -75,8 +74,8 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
     // This is a relatively straight-forward load function with support for pagination
     try {
       pageNumber += 1
-      const limit = LOAD_LIMIT
-      const skip = LOAD_LIMIT * (pageNumber - 1)
+      const limit = String(LOAD_LIMIT)
+      const skip = String(LOAD_LIMIT * (pageNumber - 1))
 
       // If there are less results on the first page (page.server loaded data)
       // than the limit, don't keep trying to fetch more. We're done.
@@ -149,33 +148,33 @@ However, there is also a `stateChanger` export which you should use to interact 
 
 The `stateChanger` import is an object with 4 methods on it:
 
-- `stateChanger.loaded()` 
+- `stateChanger.loaded()`
   - Designed to be called after a successful fetch.
-- `stateChanger.error()` 
+- `stateChanger.error()`
   - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` slot.
-- `stateChanger.complete()` 
+- `stateChanger.complete()`
   - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `no-data` slot.
-- `stateChanger.reset()` 
+- `stateChanger.reset()`
   - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
 ### Props
 
-- `triggerLoad: () => Promise<void>` - **required** 
+- `triggerLoad: () => Promise<void>` - **required**
   - The async function to call when we should attempt to load more data to show.
-- `loopTimeout: number = 1000` - optional 
+- `loopTimeout: number = 1000` - optional
   - If the `loopMaxCalls` is reached within this duration (in milliseconds), a cool down period is triggered.
-- `loopMaxCalls: number = 5` - optional 
+- `loopMaxCalls: number = 5` - optional
   - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
 
 ### Slots
 
-- `loading` 
+- `loading`
   - Shown while calling `triggerLoad` and waiting on a response.
-- `no-results` 
+- `no-results`
   - Shown when there are no more results to display and we haven't fetched any data yet (i.e. data is less than count of items to be shown on first "page").
-- `no-data` 
+- `no-data`
   - Shown when `stateChanger.complete()` is called, indicating we've fetched and displayed all available data.
-- `error` 
+- `error`
   - Shown when there is an error or `stateChanger.error()` has been called. The slot has an `attemptLoad` prop passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
 
 ## 📦 Contributing

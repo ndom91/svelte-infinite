@@ -5,15 +5,15 @@
   import UserCard from "$routes/lib/UserCard.svelte"
   import { InfiniteLoader, stateChanger } from "$lib/index.js"
 
-  const allItems = $state<number[]>($page.data.items)
+  const allItems = $state<{ id: number; body: string }[]>($page.data.items)
   let pageNumber = $state(1)
 
   // Load more items on infinite scroll
   const loadMore = async () => {
     try {
       pageNumber += 1
-      const limit = LOAD_LIMIT
-      const skip = LOAD_LIMIT * (pageNumber - 1)
+      const limit = String(LOAD_LIMIT)
+      const skip = String(LOAD_LIMIT * (pageNumber - 1))
 
       // If there are less results on the first page than the limit,
       // don't keep trying to fetch more. We're done.
@@ -53,7 +53,7 @@
 <main class="container">
   <nav>
     <h1>Svelte <sup>5</sup> Infinite</h1>
-    <SvelteLogo alt="Svelte Logo" />
+    <SvelteLogo />
   </nav>
   <div class="content">
     <p>

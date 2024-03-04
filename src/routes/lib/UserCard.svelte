@@ -1,5 +1,5 @@
 <script lang="ts">
-  const { user } = $props<{ id: number; body: string }>()
+  const { user } = $props<{ user: { id: number; body: string } }>()
 </script>
 
 <div class="container">
