@@ -165,7 +165,7 @@ The `stateChanger` import is an object with 4 methods on it:
 
 - `triggerLoad: () => Promise<void>` - **required**
   - The async function to call when we should attempt to load more data to show.
-- `intersectionOptions` - optional
+- `intersectionOptions`: [`IntersectionObserverInit`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) - optional
   - The options to pass to the `IntersectionObserver` instance. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) for more details. Default is `{ rootMargin: "0px 0px 200px 0px" }`, making it trigger the `loadMore` function 200px before it actually intersects with the root element (window by default). This has the effect of beginning to load the next page of data before the user has actually reached the bottom of the list, making the experience feel more smooth.
   - It may also be required to pass in a reference to your scroll container as the `root` option, if your scroll container is not the window.
 - `loopTimeout: number = 1000` - optional
