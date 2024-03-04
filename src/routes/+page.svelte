@@ -7,6 +7,7 @@
 
   const allItems = $state<{ id: number; body: string }[]>($page.data.items)
   let pageNumber = $state(1)
+  let rootElement = $state<HTMLElement>()
 
   // Load more items on infinite scroll
   const loadMore = async () => {
@@ -28,6 +29,7 @@
 
       if (!dataResponse.ok) {
         stateChanger.error()
+        pageNumber -= 1
         return
       }
       const data = await dataResponse.json()
@@ -46,6 +48,7 @@
     } catch (error) {
       console.error(error)
       stateChanger.error()
+      pageNumber -= 1
     }
   }
 </script>
@@ -55,14 +58,18 @@
     <h1>Svelte <sup>5</sup> Infinite</h1>
     <SvelteLogo />
   </nav>
-  <div class="content">
+  <!--
+    This '.content' element is my IntersectionObserver root because it is the
+    element which has the 'overflow-y: scroll' property on it. 
+  -->
+  <div class="content" bind:this={rootElement}>
     <p>
       <span><strong>Instructions</strong>: Just keep scrolling..</span>
       <span>
         <strong>Warning</strong>: 10% of requests will <span class="warning-text">fail</span>
       </span>
     </p>
-    <InfiniteLoader triggerLoad={loadMore}>
+    <InfiniteLoader triggerLoad={loadMore} intersectionOptions={{ root: rootElement }}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}

@@ -35,9 +35,16 @@
     triggerLoad: () => Promise<void>
     loopTimeout?: number
     loopMaxCalls?: number
+    intersectionOptions?: IntersectionObserverInit
   }
 
-  const { triggerLoad, loopTimeout = 1000, loopMaxCalls = 5 } = $props<InfiniteLoaderProps>()
+  const {
+    triggerLoad,
+    loopTimeout = 1000,
+    loopMaxCalls = 5,
+    intersectionOptions = {}
+  } = $props<InfiniteLoaderProps>()
+
   const ERROR_INFINITE_LOOP = `Executed load function ${loopMaxCalls} or more times within a short period. Cooling off..`
 
   // Avoid infinite loops
@@ -100,14 +107,15 @@
   $effect(() => {
     if (observer || !intersectionTarget) return
 
-    observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          attemptLoad()
-        }
-      },
-      { rootMargin: "100px 0px 0px 0px" }
-    )
+    const appliedIntersectionOptions = {
+      rootMargin: "0px 0px 200px 0px",
+      ...intersectionOptions
+    }
+    observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) {
+        attemptLoad()
+      }
+    }, appliedIntersectionOptions)
     observer.observe(intersectionTarget)
   })
 
@@ -118,86 +126,96 @@
   })
 </script>
 
-<div class="loader-wrapper">
+<div class="infinite-loader-wrapper">
   <slot />
 
-  {#if showLoading}
-    <slot name="loading">
-      <div class="loading">Loading...</div>
-    </slot>
-  {/if}
+  <div class="infinite-intersection-target" bind:this={intersectionTarget}>
+    {#if showLoading}
+      <slot name="loading">
+        <div class="infinite-loading">Loading...</div>
+      </slot>
+    {/if}
 
-  {#if showNoResults}
-    <slot name="no-results">
-      <div class="no-results">No results</div>
-    </slot>
-  {/if}
+    {#if showNoResults}
+      <slot name="no-results">
+        <div class="infinite-no-results">No results</div>
+      </slot>
+    {/if}
 
-  {#if showNoMore}
-    <slot name="no-data">
-      <div class="no-data">No more data</div>
-    </slot>
-  {/if}
+    {#if showNoMore}
+      <slot name="no-data">
+        <div class="infinite-no-data">No more data</div>
+      </slot>
+    {/if}
 
-  {#if showError}
-    <slot name="error" {attemptLoad}>
-      <div class="error">
-        <div class="label">Oops, something went wrong</div>
-        <button class="btn" on:click={attemptLoad}> Retry </button>
-      </div>
-    </slot>
-  {/if}
-
-  <div class="target" bind:this={intersectionTarget} />
+    {#if showError}
+      <slot name="error" {attemptLoad}>
+        <div class="infinite-error">
+          <div class="infinite-label">Oops, something went wrong</div>
+          <button class="infinite-btn" disabled={status === STATUS.COMPLETE} onclick={attemptLoad}>
+            Retry
+          </button>
+        </div>
+      </slot>
+    {/if}
+  </div>
 </div>
 
 <style>
-  .loader-wrapper {
+  .infinite-loader-wrapper {
     display: grid;
     width: 100%;
     place-items: center;
 
-    .loading {
+    .infinite-loading {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
 
-    .no-results {
+    .infinite-no-results {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
 
-    .no-data {
+    .infinite-no-data {
       margin-top: 1rem;
       font-size: 1.5rem;
     }
 
-    .error {
+    .infinite-error {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       font-size: 1.5rem;
       margin-block: 1rem;
 
-      .label {
-        color: firebrick;
+      .infinite-label {
+        color: crimson;
       }
 
-      .btn {
+      .infinite-btn {
         color: white;
         background-color: #333;
         padding-inline: 1.5rem;
         padding-block: 0.75rem;
         border-radius: 0.25rem;
         border: none;
+        transition: background-color 0.3s;
+        line-height: normal;
       }
-      .btn:hover {
+      .infinite-btn:hover {
         cursor: pointer;
+        background-color: #222;
       }
     }
 
-    .target {
-      height: 1rem;
+    .infinite-intersection-target {
+      width: 100%;
+      min-height: 1px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
   }
 </style>
