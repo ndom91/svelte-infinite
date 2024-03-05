@@ -166,17 +166,14 @@
     width: 100%;
 
     .infinite-loading {
-      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
     .infinite-no-results {
-      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
     .infinite-no-data {
-      margin-top: 1rem;
       font-size: 1.5rem;
     }
 
@@ -211,6 +208,7 @@
       width: 100%;
       min-height: 1px;
       display: flex;
+      margin-block: 2rem;
       flex-direction: column;
       align-items: center;
       justify-content: center;
