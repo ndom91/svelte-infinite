@@ -163,9 +163,7 @@
 
 <style>
   .infinite-loader-wrapper {
-    display: grid;
     width: 100%;
-    place-items: center;
 
     .infinite-loading {
       margin-top: 1rem;
