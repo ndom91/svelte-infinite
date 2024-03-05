@@ -208,7 +208,7 @@
       width: 100%;
       min-height: 1px;
       display: flex;
-      margin-block: 2rem;
+      padding-block: 2rem;
       flex-direction: column;
       align-items: center;
       justify-content: center;
