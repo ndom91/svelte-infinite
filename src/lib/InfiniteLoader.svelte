@@ -47,8 +47,8 @@
 
   const {
     triggerLoad,
-    loopTimeout = 2000,
-    loopDetectionTimeout = 1000,
+    loopTimeout = 3000,
+    loopDetectionTimeout = 2000,
     loopMaxCalls = 5,
     intersectionOptions = {},
     children,

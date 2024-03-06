@@ -175,9 +175,9 @@ The `loaderState` import is an object with 4 methods on it:
 - `intersectionOptions: `[`IntersectionObserverInit`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options)` = { rootMargin: "0px 0px 200px 0px" }` - optional
   - The options to pass to the `IntersectionObserver` instance. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) for more details. The default `rootMargin` value will cause the target to intersect 200px earlier and trigger the `loadMore` function before it actually intersects with the root element (window by default). This has the effect of beginning to load the next page of data before the user has actually reached the current bottom of the list, making the experience feel more smooth.
   - It may also be required to pass in a reference to your scroll container as the `root` option, if your scroll container is not the window.
-- `loopTimeout: number = 2000` - optional
+- `loopTimeout: number = 3000` - optional
   - If the `loopMaxCalls` is reached within the detection timeout, a cool down period is triggered of this length (in milliseconds).
-- `loopDetectionTimeout: number = 1000` - optional
+- `loopDetectionTimeout: number = 2000` - optional
   - The time in milliseconds in which the `loopMaxCalls` count must be hit in order to trigger a cool down period of `loopTimeout` length.
 - `loopMaxCalls: number = 5` - optional
   - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.

@@ -69,7 +69,7 @@
         <strong>Warning</strong>: 10% of requests will <span class="warning-text">fail</span>
       </span>
     </p>
-    <InfiniteLoader triggerLoad={loadMore} intersectionOptions={{ root: rootElement }}>
+    <InfiniteLoader triggerLoad={loadMore} loopDetectionTimeout={7500} intersectionOptions={{ root: rootElement }}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
