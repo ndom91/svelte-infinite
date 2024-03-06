@@ -64,17 +64,20 @@ This is a more realistic example use-case which includes a paginated data endpoi
 
 ```svelte
 <script lang="ts">
+  // +page.svelte
+
   import { InfiniteLoader, loaderState } from "svelte-infinite"
   import UserCard from "$components/UserCard.svelte"
 
   const LOAD_LIMIT = 20
+  // Assume `$page.data.items` is the `+page.server.ts` server-side loaded
+  // and rendered initial 20 items of the list
   const allItems = $state<{ id: number, body: string }[]>($page.data.items)
   let pageNumber = $state(1)
 
-  // 1. You'll have to pass the InfiniteLoader component a load function
+  // 1. This `loadMore` function is what we'll pass the InfiniteLoader component
   // to its `triggerLoad` prop.
   const loadMore = async () => {
-    // This is a relatively straight-forward load function with support for pagination
     try {
       pageNumber += 1
       const limit = String(LOAD_LIMIT)
@@ -83,20 +86,21 @@ This is a more realistic example use-case which includes a paginated data endpoi
       // If there are less results on the first page (page.server loaded data)
       // than the limit, don't keep trying to fetch more. We're done.
       if (allItems.length < LOAD_LIMIT) {
-        loaderState.complete()
+        loaderState.complete()               // <--- using loaderState
         return
       }
 
       const searchParams = new URLSearchParams({ limit, skip })
 
-      // Execute the API call to grab more data
+      // Fetch an endpoint that supports server-side pagination
       const dataResponse = await fetch(`/api/data?${searchParams}`)
 
       // Ideally, like most paginated endpoints, this should return the data
       // you've requested for your page, as well as the total amount of data
       // available to page through
+
       if (!dataResponse.ok) {
-        loaderState.error()
+        loaderState.error()                 // <--- using loaderState
 
         // On errors, set the pageNumber back so we can retry
         // that page's data on the next 'loadMore' attempt
@@ -105,8 +109,7 @@ This is a more realistic example use-case which includes a paginated data endpoi
       }
       const data = await dataResponse.json()
 
-      // If we've received data, push it to the reactive state variable
-      // rendering our items inside the `<InfiniteLoader />` below.
+      // If we've successfully received data, push it to the reactive state variable
       if (data.items.length) {
         allItems.push(...data.items)
       }
@@ -114,13 +117,13 @@ This is a more realistic example use-case which includes a paginated data endpoi
       // If there are more (or equal) number of items loaded as are totally available
       // from the API, don't keep trying to fetch more. We're done.
       if (allItems.length >= data.totalCount) {
-        loaderState.complete()
+        loaderState.complete()               // <--- using loaderState
       } else {
-        loaderState.loaded()
+        loaderState.loaded()                 // <--- using loaderState
       }
     } catch (error) {
       console.error(error)
-      loaderState.error()
+      loaderState.error()                   // <--- using loaderState
       pageNumber -= 1
     }
   }
