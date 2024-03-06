@@ -73,6 +73,9 @@
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
+      {#snippet loading()}
+        <span>Artificially waiting...</span>
+      {/snippet}
     </InfiniteLoader>
   </div>
 </main>

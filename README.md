@@ -20,6 +20,8 @@
 🔎 `IntersectionObserver` based  
 🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
+Svelte 5 is still early days, but I couldn't find an infinite loader-type component that was maintained for the last few years of Svelte 4. So I had recently built this for a Svelte 5-based application I was working on and was pretty happy with it, so I decided to clean it up and share it with the world! As Svelte 5 inevitably changes over the next weeks and months, I plan to keep this package updated and working with the latest available version of Svelte 5.
+
 ## 🏗️ Getting Started
 
 1. Install `svelte-infinite`
@@ -132,10 +134,15 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
         <UserCard {user} />
       {/each}
 
-      <!-- There are a few optional slots for customizing what is shown at the bottom
-           of the scroller in various states, see README.md for more details -->
-      <div slot="loading">Loading...</div>
-      <div slot="no-data">Thats it, no more users left!</div>
+      <!-- 3. There are a few optional snippets for customizing what is shown at the bottom
+           of the scroller in various states, see the 'Snippets' section for more details -->
+      {#snippet loading()}
+        Loading...
+      {/snippet}
+      {#snippet error(load)}
+        <div>Error fetching data</div>
+        <button onclick={load}>Retry</button>
+      {/snippet}
     </InfiniteLoader>
 </main>
 
@@ -144,9 +151,9 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
 
 ## ♾️ Usage
 
-The `InfiniteLoader` component is a wrapper around your items, which will trigger the `triggerLoad` function when the user scrolls to the bottom of the list.
+This package consists of two parts, first the `InfiniteLoader` component which is a wrapper around your items. It will trigger whichever async function you've passed to the `triggerLoad` prop when the user scrolls to the bottom of the list.
 
-However, there is also a `loaderState` export which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. See the `loadMore` function above or the example application in `/src/routes` in this repository.
+Second, there is also a `loaderState` import which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. you can communicate that to the loader. The most basic usage example can be seen in the 'Getting Started' section above. A more complex example can be seen in the 'Example' section, and of course the application in `/src/routes/+page.svelte` in this repository also has a "real-world" usage example.
 
 ### loaderState
 
@@ -155,9 +162,9 @@ The `loaderState` import is an object with 4 methods on it:
 - `loaderState.loaded()`
   - Designed to be called after a successful fetch.
 - `loaderState.error()`
-  - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` slot.
+  - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` snippet.
 - `loaderState.complete()`
-  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `no-data` slot.
+  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `no-data` snippet.
 - `loaderState.reset()`
   - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
@@ -173,16 +180,18 @@ The `loaderState` import is an object with 4 methods on it:
 - `loopMaxCalls: number = 5` - optional
   - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
 
-### Slots
+### Snippets
+
+Snippets [replace slots](https://svelte-5-preview.vercel.app/docs/snippets#snippets-and-slots) in Svelte 5, and as such are used here to customize the content shown at the bottom of the scroller in various states. The `InfiniteLoader` component has 4 props for snippets available.
 
 - `loading`
   - Shown while calling `triggerLoad` and waiting on a response.
-- `no-results`
+- `noResults`
   - Shown when there are no more results to display and we haven't fetched any data yet (i.e. data is less than count of items to be shown on first "page").
-- `no-data`
+- `noData`
   - Shown when `loaderState.complete()` is called, indicating we've fetched and displayed all available data.
 - `error`
-  - Shown when there is an error or `loaderState.error()` has been called. The slot has an `attemptLoad` prop passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
+  - Shown when there is an error or `loaderState.error()` has been called. The snippet has an `attemptLoad` parameter passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
 
 ## 📦 Contributing
 

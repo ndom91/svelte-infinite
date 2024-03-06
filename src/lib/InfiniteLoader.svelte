@@ -29,20 +29,30 @@
 </script>
 
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte"
+  import { onMount, onDestroy, type Snippet } from "svelte"
 
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
     loopTimeout?: number
     loopMaxCalls?: number
     intersectionOptions?: IntersectionObserverInit
+    children: Snippet
+    loading?: Snippet
+    noResults?: Snippet
+    noData?: Snippet
+    error?: Snippet<[{ attemptLoad: Promise<() => void> }]>
   }
 
   const {
     triggerLoad,
     loopTimeout = 1000,
     loopMaxCalls = 5,
-    intersectionOptions = {}
+    intersectionOptions = {},
+    children,
+    loading,
+    noResults,
+    noData,
+    error
   } = $props<InfiniteLoaderProps>()
 
   const ERROR_INFINITE_LOOP = `Executed load function ${loopMaxCalls} or more times within a short period. Cooling off..`
@@ -76,7 +86,7 @@
   let showLoading = $derived(status === STATUS.LOADING)
   let showError = $derived(status === STATUS.ERROR)
   let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad)
-  let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
+  let showNoData = $derived(status === STATUS.COMPLETE && !isFirstLoad)
 
   async function attemptLoad() {
     // If we're complete, don't attempt to load again
@@ -127,36 +137,44 @@
 </script>
 
 <div class="infinite-loader-wrapper">
-  <slot />
+  {@render children()}
 
   <div class="infinite-intersection-target" bind:this={intersectionTarget}>
     {#if showLoading}
-      <slot name="loading">
+      {#if loading}
+        {@render loading()}
+      {:else}
         <div class="infinite-loading">Loading...</div>
-      </slot>
+      {/if}
     {/if}
 
     {#if showNoResults}
-      <slot name="no-results">
+      {#if noResults}
+        {@render noResults()}
+      {:else}
         <div class="infinite-no-results">No results</div>
-      </slot>
+      {/if}
     {/if}
 
-    {#if showNoMore}
-      <slot name="no-data">
+    {#if showNoData}
+      {#if noData}
+        {@render noData()}
+      {:else}
         <div class="infinite-no-data">No more data</div>
-      </slot>
+      {/if}
     {/if}
 
     {#if showError}
-      <slot name="error" {attemptLoad}>
+      {#if error}
+        {@render error(attemptLoad)}
+      {:else}
         <div class="infinite-error">
           <div class="infinite-label">Oops, something went wrong</div>
           <button class="infinite-btn" disabled={status === STATUS.COMPLETE} onclick={attemptLoad}>
             Retry
           </button>
         </div>
-      </slot>
+      {/if}
     {/if}
   </div>
 </div>
