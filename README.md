@@ -12,15 +12,18 @@
 [![](https://img.shields.io/npm/dm/svelte-infinite?style=for-the-badge&labelColor=black&color=black)](https://npmjs.org/packages/svelte-infinite)
 [![](https://img.shields.io/badge/demo-black?style=for-the-badge&logo=&logoColor=white&labelColor=black&color=black)](https://svelte-5-infinite.vercel.app)
 
-> Svelte Infinite Loader designed and rebuilt specifically for use in **Svelte 5** with runes
+> Svelte Infinite Loader designed and rebuilt specifically for use with **Svelte 5**
 
 ✨ Flexible  
 ⏰ Infinite Loop Detection  
 📣 Control Loader State  
 🔎 `IntersectionObserver` based  
+🔥 Using Runes and Snippets  
 🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
-Svelte 5 is still early days, but I couldn't find an infinite loader-type component that was maintained for the last few years of Svelte 4. So I had recently built this for a Svelte 5-based application I was working on and was pretty happy with it, so I decided to clean it up and share it with the world! As Svelte 5 inevitably changes over the next weeks and months, I plan to keep this package updated and working with the latest available version of Svelte 5.
+Svelte 5 is still early days, but I couldn't find an infinite loader-type component that was maintained for the last few years of Svelte 4 even. So I had recently built this for a Svelte 5-based application I'm working on and was pretty happy with it, so I decided to share it with the world! 
+
+As Svelte 5 inevitably changes over the next weeks and months, I plan to keep this package updated and working with the latest available version of Svelte 5. Don't hesitate to open an issue if something has changed in the latest Svelte releases or you come across a bug!
 
 ## 🏗️ Getting Started
 
@@ -55,11 +58,9 @@ yarn add svelte-infinite
 </InfiniteLoader>
 ```
 
-The component should wrap your list of items, and `loaderState` should be used in your `triggerLoad` function (and/or elsewhere) to interact with the internal state of the Loader component. You tell it whether you're out of data, ran into an error, etc.
-
-See the example below and [in this repository](https://github.com/ndom91/svelte-infinite/blob/main/src/routes/%2Bpage.svelte#L12-L50) for more details.
-
 ## 🍍 Example
+
+This is a more realistic example use-case which includes a paginated data endpoint that your `triggerLoad` function should hit every time it's called to load more data. It also includes the use of some of the optional snippets to render custom markup inside the loader component.
 
 ```svelte
 <script lang="ts">
@@ -155,36 +156,36 @@ This package consists of two parts, first the `InfiniteLoader` component which i
 
 Second, there is also a `loaderState` import which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. you can communicate that to the loader. The most basic usage example can be seen in the 'Getting Started' section above. A more complex example can be seen in the 'Example' section, and of course the application in `/src/routes/+page.svelte` in this repository also has a "real-world" usage example.
 
-### loaderState
+### `loaderState` Controller
 
-The `loaderState` import is an object with 4 methods on it:
+The `loaderState` controller has 4 methods on it. You should call these at the appropriate times to control the internal state of the `InfiniteLoader`.
 
 - `loaderState.loaded()`
-  - Designed to be called after a successful fetch.
+  - Designed to be called after a successful fetch. Will set the internal state back to `READY` so another fetch can be attempted.
 - `loaderState.error()`
   - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` snippet.
 - `loaderState.complete()`
-  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `no-data` snippet.
+  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `noData` snippet.
 - `loaderState.reset()`
-  - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
+  - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your data and the user enters a new query.
 
-### Props
+### `InfiniteLoader` Props
 
 - `triggerLoad: () => Promise<void>` - **required**
   - The async function to call when we should attempt to load more data to show.
 - `intersectionOptions: `[`IntersectionObserverInit`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options)` = { rootMargin: "0px 0px 200px 0px" }` - optional
   - The options to pass to the `IntersectionObserver` instance. See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) for more details. The default `rootMargin` value will cause the target to intersect 200px earlier and trigger the `loadMore` function before it actually intersects with the root element (window by default). This has the effect of beginning to load the next page of data before the user has actually reached the current bottom of the list, making the experience feel more smooth.
-  - It may also be required to pass in a reference to your scroll container as the `root` option, if your scroll container is not the window.
+  - If you are using a separate scroll container (element with `overflow-y: scroll`) other than the window / viewport, then it might be necessary for you to also pass a [custom `root` element](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) here.
 - `loopTimeout: number = 3000` - optional
-  - If the `loopMaxCalls` is reached within the detection timeout, a cool down period is triggered of this length (in milliseconds).
+  - Length of the cool down period (in milliseconds).
 - `loopDetectionTimeout: number = 2000` - optional
-  - The time in milliseconds in which the `loopMaxCalls` count must be hit in order to trigger a cool down period of `loopTimeout` length.
+  - The time in milliseconds in which the `loopMaxCalls` count must be hit in order to trigger a cool down period.
 - `loopMaxCalls: number = 5` - optional
-  - The number of calls to the `triggerLoad` function within timeout which should trigger cool down period.
+  - The limit of `triggerLoad` executions which will trigger a cool down period, if reached within the `loopDetectionTimeout`.
 
-### Snippets
+### `InfiniteLoader` Snippets
 
-Snippets [replace slots](https://svelte-5-preview.vercel.app/docs/snippets#snippets-and-slots) in Svelte 5, and as such are used here to customize the content shown at the bottom of the scroller in various states. The `InfiniteLoader` component has 4 props for snippets available.
+Snippets [replace slots](https://svelte-5-preview.vercel.app/docs/snippets#snippets-and-slots) in Svelte 5, and as such are used here to customize the content shown at the bottom of the scroller in various states. The `InfiniteLoader` component has 5 snippet "slots" available.
 
 - `loading`
   - Shown while calling `triggerLoad` and waiting on a response.
