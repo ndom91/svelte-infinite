@@ -74,7 +74,7 @@
         <UserCard {user} />
       {/each}
       {#snippet loading()}
-        <span>Artificially waiting...</span>
+        <span style="font-size: 1.25rem">Artificially waiting...</span>
       {/snippet}
     </InfiniteLoader>
   </div>

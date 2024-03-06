@@ -192,6 +192,8 @@ Snippets [replace slots](https://svelte-5-preview.vercel.app/docs/snippets#snipp
   - Shown when there are no more results to display and we haven't fetched any data yet (i.e. data is less than count of items to be shown on first "page").
 - `noData`
   - Shown when `loaderState.complete()` is called, indicating we've fetched and displayed all available data.
+- `coolingOff`
+  - Shown when `loaderState !== "COMPLETE"` and a loop has been detected. Will disappear and `loopTimeout` when the cooling off period expires.
 - `error`
   - Shown when there is an error or `loaderState.error()` has been called. The snippet has an `attemptLoad` parameter passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
 

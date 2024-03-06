@@ -41,6 +41,7 @@
     loading?: Snippet
     noResults?: Snippet
     noData?: Snippet
+    coolingOff?: Snippet
     error?: Snippet<[{ attemptLoad: Promise<() => void> }]>
   }
 
@@ -54,6 +55,7 @@
     loading,
     noResults,
     noData,
+    coolingOff,
     error
   } = $props<InfiniteLoaderProps>()
 
@@ -95,6 +97,7 @@
   let showError = $derived(status === STATUS.ERROR)
   let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad)
   let showNoData = $derived(status === STATUS.COMPLETE && !isFirstLoad)
+  let showCoolingOff = $derived(status !== STATUS.COMPLETE && loopTracker.coolingOff)
 
   async function attemptLoad() {
     // If we're complete, don't attempt to load again
@@ -112,8 +115,8 @@
       loopTracker.track()
     }
 
-    // @ts-expect-error - client can set status to complete inside triggerLoad
-    // via loaderState.complete(), TS obviously doesn't know this.
+    // @ts-expect-error - client can set status to 'COMPLETE' inside the
+    // `triggerLoad` fn above via `loaderState.complete()`, TS obviously doesn't know this.
     if (status !== STATUS.ERROR && status !== STATUS.COMPLETE) {
       if (status === STATUS.LOADING) {
         status = STATUS.READY
@@ -172,6 +175,14 @@
       {/if}
     {/if}
 
+    {#if showCoolingOff}
+      {#if coolingOff}
+        {@render coolingOff()}
+      {:else}
+        <div class="infinite-cooling-off">Potential loop detected, please wait and try again..</div>
+      {/if}
+    {/if}
+
     {#if showError}
       {#if error}
         {@render error(attemptLoad)}
@@ -201,6 +212,10 @@
 
     .infinite-no-data {
       font-size: 1.5rem;
+    }
+
+    .infinite-cooling-off {
+      font-size: 1.25rem;
     }
 
     .infinite-error {
