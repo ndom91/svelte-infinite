@@ -6,7 +6,7 @@
     "email": "yo@ndo.dev",
     "url": "https://ndo.dev"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "homepage": "https://svelte-5-infinite.vercel.app",
   "keywords": [

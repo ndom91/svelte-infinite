@@ -34,6 +34,7 @@
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
     loopTimeout?: number
+    loopDetectionTimeout?: number
     loopMaxCalls?: number
     intersectionOptions?: IntersectionObserverInit
     children: Snippet
@@ -45,7 +46,8 @@
 
   const {
     triggerLoad,
-    loopTimeout = 1000,
+    loopTimeout = 2000,
+    loopDetectionTimeout = 1000,
     loopMaxCalls = 5,
     intersectionOptions = {},
     children,
@@ -55,24 +57,30 @@
     error
   } = $props<InfiniteLoaderProps>()
 
-  const ERROR_INFINITE_LOOP = `Executed load function ${loopMaxCalls} or more times within a short period. Cooling off..`
+  const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
 
   // Avoid infinite loops
   class LoopTracker {
     coolingOff = false
-    timer: number | null = null
-    count = 0
+    #coolingOffTimer: number | null = null
+    #timer: number | null = null
+    #count = 0
 
     track() {
-      this.count += 1
+      this.#count += 1
 
-      if (this.count >= loopMaxCalls) {
+      clearTimeout(this.#timer)
+      this.#timer = setTimeout(() => {
+        this.#count = 0
+      }, loopDetectionTimeout)
+
+      if (this.#count >= loopMaxCalls) {
         console.error(ERROR_INFINITE_LOOP)
 
         this.coolingOff = true
-        this.timer = setTimeout(() => {
+        this.#coolingOffTimer = setTimeout(() => {
           this.coolingOff = false
-          this.count = 0
+          this.#count = 0
         }, loopTimeout)
       }
     }
