@@ -1,35 +1,6 @@
-<script context="module" lang="ts">
-  const STATUS = {
-    READY: "READY",
-    LOADING: "LOADING",
-    COMPLETE: "COMPLETE",
-    ERROR: "ERROR"
-  } as const
-
-  let isFirstLoad = $state(true)
-  let status = $state<keyof typeof STATUS>(STATUS.READY)
-
-  export const loaderState = {
-    loaded: () => {
-      isFirstLoad = false
-      status = STATUS.READY
-    },
-    complete: () => {
-      isFirstLoad = false
-      status = STATUS.COMPLETE
-    },
-    reset: () => {
-      status = STATUS.READY
-      isFirstLoad = true
-    },
-    error: () => {
-      status = STATUS.ERROR
-    }
-  }
-</script>
-
 <script lang="ts">
   import { onMount, onDestroy, type Snippet } from "svelte"
+  import { STATUS, loaderState } from "./loaderState.svelte"
 
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
@@ -71,7 +42,7 @@
     track() {
       this.#count += 1
 
-      clearTimeout(this.#timer)
+      clearTimeout(this.#timer!)
       this.#timer = setTimeout(() => {
         this.#count = 0
       }, loopDetectionTimeout)
@@ -93,21 +64,24 @@
   let intersectionTarget = $state<HTMLElement>()
   let observer = $state<IntersectionObserver>()
 
-  let showLoading = $derived(status === STATUS.LOADING)
-  let showError = $derived(status === STATUS.ERROR)
-  let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad)
-  let showNoData = $derived(status === STATUS.COMPLETE && !isFirstLoad)
-  let showCoolingOff = $derived(status !== STATUS.COMPLETE && loopTracker.coolingOff)
+  let showLoading = $derived(loaderState.status === STATUS.LOADING)
+  let showError = $derived(loaderState.status === STATUS.ERROR)
+  let showNoResults = $derived(loaderState.status === STATUS.COMPLETE && loaderState.isFirstLoad)
+  let showNoData = $derived(loaderState.status === STATUS.COMPLETE && !loaderState.isFirstLoad)
+  let showCoolingOff = $derived(loaderState.status !== STATUS.COMPLETE && loopTracker.coolingOff)
 
   async function attemptLoad() {
     // If we're complete, don't attempt to load again
     // If we're not ready (i.e. in the middle of a fetch) don't attempt to load again
     // However, if we're in an error state, allow the user to retry via btn click
-    if (status === STATUS.COMPLETE || (status !== STATUS.READY && status !== STATUS.ERROR)) {
+    if (
+      loaderState.status === STATUS.COMPLETE ||
+      (loaderState.status !== STATUS.READY && loaderState.status !== STATUS.ERROR)
+    ) {
       return
     }
 
-    status = STATUS.LOADING
+    loaderState.status = STATUS.LOADING
 
     // Skip loading if we're in infinite loop cool-off
     if (!loopTracker.coolingOff) {
@@ -117,10 +91,10 @@
 
     // @ts-expect-error - client can set status to 'COMPLETE' inside the
     // `triggerLoad` fn above via `loaderState.complete()`, TS obviously doesn't know this.
-    if (status !== STATUS.ERROR && status !== STATUS.COMPLETE) {
-      if (status === STATUS.LOADING) {
-        status = STATUS.READY
-        isFirstLoad = false
+    if (loaderState.status !== STATUS.ERROR && loaderState.status !== STATUS.COMPLETE) {
+      if (loaderState.status === STATUS.LOADING) {
+        loaderState.status = STATUS.READY
+        loaderState.isFirstLoad = false
       }
     }
   }
@@ -189,7 +163,11 @@
       {:else}
         <div class="infinite-error">
           <div class="infinite-label">Oops, something went wrong</div>
-          <button class="infinite-btn" disabled={status === STATUS.COMPLETE} onclick={attemptLoad}>
+          <button
+            class="infinite-btn"
+            disabled={loaderState.status === STATUS.COMPLETE}
+            onclick={attemptLoad}
+          >
             Retry
           </button>
         </div>
