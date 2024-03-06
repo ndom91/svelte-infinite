@@ -3,7 +3,7 @@
   import SvelteLogo from "$assets/SvelteLogo.svelte"
   import { LOAD_LIMIT } from "$routes/lib/utils"
   import UserCard from "$routes/lib/UserCard.svelte"
-  import { InfiniteLoader, stateChanger } from "$lib/index.js"
+  import { InfiniteLoader, loaderState } from "$lib/index.js"
 
   const allItems = $state<{ id: number; body: string }[]>($page.data.items)
   let pageNumber = $state(1)
@@ -19,7 +19,7 @@
       // If there are less results on the first page than the limit,
       // don't keep trying to fetch more. We're done.
       if (allItems.length < LOAD_LIMIT) {
-        stateChanger.complete()
+        loaderState.complete()
         return
       }
 
@@ -28,7 +28,7 @@
       const dataResponse = await fetch(`/api/data?${searchParams}`)
 
       if (!dataResponse.ok) {
-        stateChanger.error()
+        loaderState.error()
         pageNumber -= 1
         return
       }
@@ -41,13 +41,13 @@
       // There are less items available than fit on one page,
       // don't keep trying to fetch more. We're done.
       if (allItems.length >= data.totalCount) {
-        stateChanger.complete()
+        loaderState.complete()
       } else {
-        stateChanger.loaded()
+        loaderState.loaded()
       }
     } catch (error) {
       console.error(error)
-      stateChanger.error()
+      loaderState.error()
       pageNumber -= 1
     }
   }

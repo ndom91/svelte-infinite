@@ -1,3 +1,3 @@
-import InfiniteLoader, { stateChanger } from './InfiniteLoader.svelte';
+import InfiniteLoader, { loaderState } from "./InfiniteLoader.svelte"
 
-export { InfiniteLoader, stateChanger };
+export { InfiniteLoader, loaderState }

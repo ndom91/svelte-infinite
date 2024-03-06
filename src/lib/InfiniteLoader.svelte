@@ -9,7 +9,7 @@
   let isFirstLoad = $state(true)
   let status = $state<keyof typeof STATUS>(STATUS.READY)
 
-  export const stateChanger = {
+  export const loaderState = {
     loaded: () => {
       isFirstLoad = false
       status = STATUS.READY
@@ -95,7 +95,7 @@
     }
 
     // @ts-expect-error - client can set status to complete inside triggerLoad
-    // via stateChanger.complete(), TS obviously doesn't know this.
+    // via loaderState.complete(), TS obviously doesn't know this.
     if (status !== STATUS.ERROR && status !== STATUS.COMPLETE) {
       if (status === STATUS.LOADING) {
         status = STATUS.READY

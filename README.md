@@ -30,11 +30,11 @@ pnpm install svelte-infinite
 yarn add svelte-infinite
 ```
 
-2. Import both `InfiniteLoader` and `stateChanger` from `svelte-infinite`
+2. Import both `InfiniteLoader` and `loaderState` from `svelte-infinite`
 
 ```svelte
 <script lang="ts">
-  import { InfiniteLoader, stateChanger } from "svelte-infinite"
+  import { InfiniteLoader, loaderState } from "svelte-infinite"
 
   const allItems = $state([])
 
@@ -42,7 +42,7 @@ yarn add svelte-infinite
     const res = fetch("...")
     const data = await jes.json()
     allItems.push(...data)
-    stateChanger.loaded()
+    loaderState.loaded()
   }
 </script>
 
@@ -53,7 +53,7 @@ yarn add svelte-infinite
 </InfiniteLoader>
 ```
 
-The component should wrap your list of items, and `stateChanger` should be used in your `triggerLoad` function (and/or elsewhere) to interact with the internal state of the Loader component. You tell it whether you're out of data, ran into an error, etc.
+The component should wrap your list of items, and `loaderState` should be used in your `triggerLoad` function (and/or elsewhere) to interact with the internal state of the Loader component. You tell it whether you're out of data, ran into an error, etc.
 
 See the example below and [in this repository](https://github.com/ndom91/svelte-infinite/blob/main/src/routes/%2Bpage.svelte#L12-L50) for more details.
 
@@ -61,7 +61,7 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
 
 ```svelte
 <script lang="ts">
-  import { InfiniteLoader, stateChanger } from "svelte-infinite"
+  import { InfiniteLoader, loaderState } from "svelte-infinite"
   import UserCard from "$components/UserCard.svelte"
 
   const LOAD_LIMIT = 20
@@ -80,7 +80,7 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
       // If there are less results on the first page (page.server loaded data)
       // than the limit, don't keep trying to fetch more. We're done.
       if (allItems.length < LOAD_LIMIT) {
-        stateChanger.complete()
+        loaderState.complete()
         return
       }
 
@@ -93,7 +93,7 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
       // you've requested for your page, as well as the total amount of data
       // available to page through
       if (!dataResponse.ok) {
-        stateChanger.error()
+        loaderState.error()
 
         // On errors, set the pageNumber back so we can retry
         // that page's data on the next 'loadMore' attempt
@@ -111,13 +111,13 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
       // If there are more (or equal) number of items loaded as are totally available
       // from the API, don't keep trying to fetch more. We're done.
       if (allItems.length >= data.totalCount) {
-        stateChanger.complete()
+        loaderState.complete()
       } else {
-        stateChanger.loaded()
+        loaderState.loaded()
       }
     } catch (error) {
       console.error(error)
-      stateChanger.error()
+      loaderState.error()
       pageNumber -= 1
     }
   }
@@ -146,19 +146,19 @@ See the example below and [in this repository](https://github.com/ndom91/svelte-
 
 The `InfiniteLoader` component is a wrapper around your items, which will trigger the `triggerLoad` function when the user scrolls to the bottom of the list.
 
-However, there is also a `stateChanger` export which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. See the `loadMore` function above or the example application in `/src/routes` in this repository.
+However, there is also a `loaderState` export which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. See the `loadMore` function above or the example application in `/src/routes` in this repository.
 
-### stateChanger
+### loaderState
 
-The `stateChanger` import is an object with 4 methods on it:
+The `loaderState` import is an object with 4 methods on it:
 
-- `stateChanger.loaded()`
+- `loaderState.loaded()`
   - Designed to be called after a successful fetch.
-- `stateChanger.error()`
+- `loaderState.error()`
   - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` slot.
-- `stateChanger.complete()`
+- `loaderState.complete()`
   - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `no-data` slot.
-- `stateChanger.reset()`
+- `loaderState.reset()`
   - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your infinite list and the user enters a new query.
 
 ### Props
@@ -180,9 +180,9 @@ The `stateChanger` import is an object with 4 methods on it:
 - `no-results`
   - Shown when there are no more results to display and we haven't fetched any data yet (i.e. data is less than count of items to be shown on first "page").
 - `no-data`
-  - Shown when `stateChanger.complete()` is called, indicating we've fetched and displayed all available data.
+  - Shown when `loaderState.complete()` is called, indicating we've fetched and displayed all available data.
 - `error`
-  - Shown when there is an error or `stateChanger.error()` has been called. The slot has an `attemptLoad` prop passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
+  - Shown when there is an error or `loaderState.error()` has been called. The slot has an `attemptLoad` prop passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
 
 ## 📦 Contributing
 
