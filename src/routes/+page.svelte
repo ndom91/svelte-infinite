@@ -91,7 +91,7 @@
     margin: 0 auto;
     width: 100%;
     max-width: 1024px;
-    max-height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 
