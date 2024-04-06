@@ -23,11 +23,11 @@
     loopMaxCalls = 5,
     intersectionOptions = {},
     children,
-    loading,
-    noResults,
-    noData,
-    coolingOff,
-    error
+    loading: loadingSnippet,
+    noResults: noResultsSnippet,
+    noData: noDataSnippet,
+    coolingOff: coolingOffSnippet,
+    error: errorSnippet
   } = $props<InfiniteLoaderProps>()
 
   const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
@@ -130,49 +130,50 @@
 </script>
 
 <div class="infinite-loader-wrapper">
+  <!-- Render the users list items -->
   {@render children()}
 
   <div class="infinite-intersection-target" bind:this={intersectionTarget}>
     {#if showLoading}
-      {#if loading}
-        {@render loading()}
+      {#if loadingSnippet}
+        {@render loadingSnippet()}
       {:else}
         <div class="infinite-loading">Loading...</div>
       {/if}
     {/if}
 
     {#if showNoResults}
-      {#if noResults}
-        {@render noResults()}
+      {#if noResultsSnippet}
+        {@render noResultsSnippet()}
       {:else}
         <div class="infinite-no-results">No results</div>
       {/if}
     {/if}
 
     {#if showNoData}
-      {#if noData}
-        {@render noData()}
+      {#if noDataSnippet}
+        {@render noDataSnippet()}
       {:else}
         <div class="infinite-no-data">No more data</div>
       {/if}
     {/if}
 
     {#if showCoolingOff}
-      {#if coolingOff}
-        {@render coolingOff()}
+      {#if coolingOffSnippet}
+        {@render coolingOffSnippet()}
       {:else}
         <div class="infinite-cooling-off">Potential loop detected, please wait and try again..</div>
       {/if}
     {/if}
 
     {#if showError}
-      {#if error}
-        {@render error(attemptLoad)}
+      {#if errorSnippet}
+        {@render errorSnippet(attemptLoad)}
       {:else}
         <div class="infinite-error">
-          <div class="infinite-label">Oops, something went wrong</div>
+          <div class="infinite-error__label">Oops, something went wrong</div>
           <button
-            class="infinite-btn"
+            class="infinite-error__btn"
             disabled={loaderState.status === STATUS.COMPLETE}
             onclick={attemptLoad}
           >
@@ -211,11 +212,11 @@
       font-size: 1.5rem;
       margin-block: 1rem;
 
-      .infinite-label {
+      .infinite-error__label {
         color: crimson;
       }
 
-      .infinite-btn {
+      .infinite-error__btn {
         color: white;
         background-color: #333;
         padding-inline: 1.5rem;
@@ -225,7 +226,7 @@
         transition: background-color 0.3s;
         line-height: normal;
       }
-      .infinite-btn:hover {
+      .infinite-error__btn:hover {
         cursor: pointer;
         background-color: #222;
       }
