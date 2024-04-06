@@ -13,7 +13,7 @@
     noResults?: Snippet
     noData?: Snippet
     coolingOff?: Snippet
-    error?: Snippet<[{ attemptLoad: Promise<() => void> }]>
+    error?: Snippet<[typeof attemptLoad]>
   }
 
   const {
@@ -32,21 +32,25 @@
 
   const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
 
-  // Avoid infinite loops
+  // Track load counts to avoid infinite loops
   class LoopTracker {
     coolingOff = false
     #coolingOffTimer: number | null = null
     #timer: number | null = null
     #count = 0
 
+    // On each call, increment the count and reset the timer
     track() {
       this.#count += 1
 
       clearTimeout(this.#timer!)
+      // Cooldown, after 2s, reset count to 0
       this.#timer = setTimeout(() => {
         this.#count = 0
       }, loopDetectionTimeout)
 
+      // If count > loopMaxCalls, begin cool-down period
+      // and start timer to reset loop count tracker
       if (this.#count >= loopMaxCalls) {
         console.error(ERROR_INFINITE_LOOP)
 
@@ -56,6 +60,11 @@
           this.#count = 0
         }, loopTimeout)
       }
+    }
+
+    destroy() {
+      this.#timer && clearTimeout(this.#timer)
+      this.#coolingOffTimer && clearTimeout(this.#coolingOffTimer)
     }
   }
 
@@ -115,9 +124,8 @@
   })
 
   onDestroy(() => {
-    if (observer) {
-      observer.disconnect()
-    }
+    observer && observer.disconnect()
+    loopTracker && loopTracker.destroy()
   })
 </script>
 
