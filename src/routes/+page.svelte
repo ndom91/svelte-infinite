@@ -72,7 +72,7 @@
     <InfiniteLoader
       triggerLoad={loadMore}
       loopDetectionTimeout={7500}
-      intersectionOptions={{ root: rootElement }}
+      intersectionOptions={{ root: rootElement, rootMargin: "0px 0px 500px 0px" }}
     >
       {#each allItems as user (user.id)}
         <UserCard {user} />
@@ -91,7 +91,7 @@
     margin: 0 auto;
     width: 100%;
     max-width: 1024px;
-    max-height: 100vh;
+    height: 100svh;
     overflow: hidden;
   }
 
