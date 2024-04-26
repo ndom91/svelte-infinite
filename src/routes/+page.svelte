@@ -55,8 +55,15 @@
 
 <main class="container">
   <nav>
-    <h1>Svelte <sup>5</sup> Infinite</h1>
-    <SvelteLogo />
+    <img
+      id="svelte-vtuber"
+      src="/svelte-vtuber.png"
+      alt="Svelte VTuber-style Logo; Credit: https://twitter.com/styxpilled"
+    />
+    <label class="sr-only" for="svelte-vtuber">
+      Credit https://twitter.com/styxpilled/status/1781565832251719868/photo/1
+    </label>
+    <h1>Infinite</h1>
   </nav>
   <!--
     This '.content' element is my IntersectionObserver root because it is the
@@ -107,16 +114,25 @@
 
   nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 1rem;
     padding-block: 1rem;
-    padding-inline: 4rem;
+    padding-inline: 2rem;
     border-radius: 1rem 1rem 0 0;
     background-color: #333;
 
     h1 {
       color: white;
-      font-size: 3rem;
+      font-size: 2.5rem;
+      font-family: "Operator Mono", "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+        "DejaVu Sans Mono", monospace;
+      font-weight: 500;
+      text-wrap: balance;
+    }
+
+    img {
+      width: 256px;
     }
   }
 
@@ -156,9 +172,8 @@
 
   @media (max-width: 768px) {
     nav {
-      padding-inline: 3rem;
       h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
       }
     }
     .content p {
@@ -170,9 +185,8 @@
 
   @media (max-width: 500px) {
     nav {
-      padding-inline: 2rem;
       h1 {
-        font-size: 1.8rem;
+        display: none;
       }
     }
     .content p {
@@ -181,5 +195,17 @@
       justify-content: start;
       font-size: 1rem;
     }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 </style>
