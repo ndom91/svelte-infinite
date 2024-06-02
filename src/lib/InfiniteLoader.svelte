@@ -7,7 +7,7 @@
     loopTimeout?: number
     loopDetectionTimeout?: number
     loopMaxCalls?: number
-    intersectionOptions?: IntersectionObserverInit
+    intersectionOptions?: Partial<IntersectionObserver>
     children: Snippet
     loading?: Snippet
     noResults?: Snippet
@@ -102,8 +102,8 @@
     // `triggerLoad` fn above via `loaderState.complete()`, TS obviously doesn't know this.
     if (loaderState.status !== STATUS.ERROR && loaderState.status !== STATUS.COMPLETE) {
       if (loaderState.status === STATUS.LOADING) {
-        loaderState.status = STATUS.READY
         loaderState.isFirstLoad = false
+        loaderState.status = STATUS.READY
       }
     }
   }
@@ -115,17 +115,21 @@
       rootMargin: "0px 0px 200px 0px",
       ...intersectionOptions
     }
-    observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) {
-        attemptLoad()
+    observer = new IntersectionObserver(async (entries) => {
+      if (entries[0]?.isIntersecting && loaderState.mounted) {
+        await attemptLoad()
       }
     }, appliedIntersectionOptions)
     observer.observe(intersectionTarget)
+
+    loaderState.mounted = true
   })
 
   onDestroy(() => {
-    observer && observer.disconnect()
-    loopTracker && loopTracker.destroy()
+    if (loaderState.mounted) {
+      observer && observer.disconnect()
+      loopTracker && loopTracker.destroy()
+    }
   })
 </script>
 

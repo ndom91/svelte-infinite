@@ -8,13 +8,14 @@ export const STATUS = {
 class LoaderState {
   isFirstLoad = $state(true)
   status = $state<keyof typeof STATUS>(STATUS.READY)
+  mounted = $state(false)
 
   loaded = () => {
-    this.isFirstLoad = false
+    if (this.isFirstLoad) this.isFirstLoad = false
     this.status = STATUS.READY
   }
   complete = () => {
-    this.isFirstLoad = false
+    if (this.isFirstLoad) this.isFirstLoad = false
     this.status = STATUS.COMPLETE
   }
   reset = () => {
