@@ -4,7 +4,7 @@
 
 <div class="container">
   <img
-    src={`https://source.boringavatars.com/marble/120/${user.id}?colors=0A0310,49007E,FF005B,FF7D10,FFB238`}
+    src={`https://generative-placeholders.glitch.me/image?width=128&height=128&style=cellular-automata&cells=10&img=${user.id}`}
     alt="User Avatar"
   />
   <div class="content">
