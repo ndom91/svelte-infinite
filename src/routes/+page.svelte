@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores"
-  import SvelteLogo from "$assets/SvelteLogo.svelte"
+  // import SvelteLogo from "$assets/SvelteLogo.svelte"
   import { LOAD_LIMIT } from "$routes/lib/utils"
   import UserCard from "$routes/lib/UserCard.svelte"
   import { InfiniteLoader, loaderState } from "$lib/index.js"
@@ -55,15 +55,7 @@
 
 <main class="container">
   <nav>
-    <img
-      id="svelte-vtuber"
-      src="/svelte-vtuber.png"
-      alt="Svelte VTuber-style Logo; Credit: https://twitter.com/styxpilled"
-    />
-    <label class="sr-only" for="svelte-vtuber">
-      Credit https://twitter.com/styxpilled/status/1781565832251719868/photo/1
-    </label>
-    <h1>Infinite</h1>
+    <h1>Svelte Infinite</h1>
   </nav>
   <!--
     This '.content' element is my IntersectionObserver root because it is the
@@ -130,10 +122,6 @@
       font-weight: 500;
       text-wrap: balance;
     }
-
-    img {
-      width: 256px;
-    }
   }
 
   .content {
@@ -153,21 +141,6 @@
     .warning-text {
       color: crimson;
     }
-  }
-
-  .data-item {
-    display: grid;
-    place-items: center;
-    padding: 3rem;
-    border: 1px solid #ccc;
-  }
-
-  .loader-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
   }
 
   @media (max-width: 768px) {
@@ -195,17 +168,5 @@
       justify-content: start;
       font-size: 1rem;
     }
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
   }
 </style>

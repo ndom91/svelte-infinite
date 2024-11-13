@@ -28,7 +28,7 @@
     noData: noDataSnippet,
     coolingOff: coolingOffSnippet,
     error: errorSnippet
-  } = $props<InfiniteLoaderProps>()
+  }: InfiniteLoaderProps = $props()
 
   const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
 
@@ -63,8 +63,12 @@
     }
 
     destroy() {
-      this.#timer && clearTimeout(this.#timer)
-      this.#coolingOffTimer && clearTimeout(this.#coolingOffTimer)
+      if (this.#timer) {
+        clearTimeout(this.#timer)
+      }
+      if (this.#coolingOffTimer) {
+        clearTimeout(this.#coolingOffTimer)
+      }
     }
   }
 
@@ -127,8 +131,12 @@
 
   onDestroy(() => {
     if (loaderState.mounted) {
-      observer && observer.disconnect()
-      loopTracker && loopTracker.destroy()
+      if (observer) {
+        observer.disconnect()
+      }
+      if (loopTracker) {
+        loopTracker.destroy()
+      }
     }
   })
 </script>

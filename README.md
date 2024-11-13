@@ -21,7 +21,7 @@
 🔥 Using Runes and Snippets  
 🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
-Svelte 5 is still early days, but I couldn't find an infinite loader-type component that was maintained for the last few years of Svelte 4 even. So I had recently built this for a Svelte 5-based application I'm working on and was pretty happy with it, so I decided to share it with the world! 
+Svelte 5 is still early days, but I couldn't find an infinite loader-type component that was maintained for the last few years of Svelte 4 even. So I had recently built this for a Svelte 5-based application I'm working on and was pretty happy with it, so I decided to share it with the world!
 
 As Svelte 5 inevitably changes over the next weeks and months, I plan to keep this package updated and working with the latest available version of Svelte 5. Don't hesitate to open an issue if something has changed in the latest Svelte releases or you come across a bug!
 

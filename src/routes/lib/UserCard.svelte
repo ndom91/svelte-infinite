@@ -32,6 +32,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
       -webkit-box-orient: vertical;
+      line-clamp: 3;
       -webkit-line-clamp: 3;
       display: -webkit-box;
     }
