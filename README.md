@@ -41,7 +41,7 @@ yarn add svelte-infinite
 
   const loadMore = async () => {
     const res = fetch("...")
-    const data = await jes.json()
+    const data = await res.json()
     allItems.push(...data)
     loaderState.loaded()
   }
