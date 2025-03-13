@@ -1,4 +1,4 @@
 import InfiniteLoader from "./InfiniteLoader.svelte"
-import { loaderState } from "./loaderState.svelte"
+import { LoaderState } from "./loaderState.svelte"
 
-export { InfiniteLoader, loaderState }
+export { InfiniteLoader, LoaderState }
