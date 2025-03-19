@@ -14,11 +14,11 @@
 
 > Svelte Infinite Loader designed and rebuilt specifically for use with **Svelte 5**
 
-✨ Flexible  
-⏰ Infinite Loop Detection  
-📣 Control Loader State  
-🔎 `IntersectionObserver` based  
-🔥 Using Runes and Snippets  
+✨ Flexible
+⏰ Infinite Loop Detection
+📣 Control Loader State
+🔎 `IntersectionObserver` based
+🔥 Using Runes and Snippets
 🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
 ## 🏗️ Getting Started
@@ -31,12 +31,13 @@ pnpm install svelte-infinite
 yarn add svelte-infinite
 ```
 
-2. Import both `InfiniteLoader` and `loaderState` from `svelte-infinite`
+2. Import both `InfiniteLoader` and `LoaderState` from `svelte-infinite`
 
 ```svelte
 <script lang="ts">
-  import { InfiniteLoader, loaderState } from "svelte-infinite"
+  import { InfiniteLoader, LoaderState } from "svelte-infinite"
 
+  const loaderState = new LoaderState()
   const allItems = $state([])
 
   const loadMore = async () => {
@@ -47,7 +48,7 @@ yarn add svelte-infinite
   }
 </script>
 
-<InfiniteLoader triggerLoad={loadMore}>
+<InfiniteLoader {loaderState} triggerLoad={loadMore}>
   {#each allItems as user (user.id)}
     <div>{user.name}</div>
   {/each}
@@ -61,10 +62,10 @@ This is a more realistic example use-case which includes a paginated data endpoi
 ```svelte
 <script lang="ts">
   // +page.svelte
-
-  import { InfiniteLoader, loaderState } from "svelte-infinite"
+  import { InfiniteLoader, LoaderState } from "svelte-infinite"
   import UserCard from "$components/UserCard.svelte"
 
+  const loaderState = new LoaderState()
   const LOAD_LIMIT = 20
   // Assume `$page.data.items` is the `+page.server.ts` server-side loaded
   // and rendered initial 20 items of the list
@@ -128,8 +129,7 @@ This is a more realistic example use-case which includes a paginated data endpoi
 <main class="container">
 
     <!-- 2. Here you wrap your items with the InfiniteLoader component -->
-
-    <InfiniteLoader triggerLoad={loadMore}>
+    <InfiniteLoader {loaderState} triggerLoad={loadMore}>
       {#each allItems as user (user.id)}
         <UserCard {user} />
       {/each}
@@ -153,7 +153,10 @@ This is a more realistic example use-case which includes a paginated data endpoi
 
 This package consists of two parts, first the `InfiniteLoader` component which is a wrapper around your items. It will trigger whichever async function you've passed to the `triggerLoad` prop when the user scrolls to the bottom of the list.
 
-Second, there is also a `loaderState` import which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. you can communicate that to the loader. The most basic usage example can be seen in the 'Getting Started' section above. A more complex example can be seen in the 'Example' section, and of course the application in `/src/routes/+page.svelte` in this repository also has a "real-world" usage example.
+Second, there is also a `LoaderState` class which you should use to interact with the internal state of the loader. For example, if your `fetch` call errored, or you've reached the maximum number of items, etc. you can communicate that to the loader. The most basic usage example can be seen in the 'Getting Started' section above. A more complex example can be seen in the 'Example' section, and of course the application in `/src/routes/+page.svelte` in this repository also has a "real world" usage example.
+
+> [!WARNING]
+> As of `0.5.0` the `LoaderState` import is not an instance of the class, but the class itself. Meaning you'll need to instantiate it yourself with `new LoaderState()` per component instance. This gives the user more flexibility when trying to use multiple `svelte-infinite` instances per page, as well as resetting the state.
 
 ### `loaderState` Controller
 
@@ -170,6 +173,8 @@ The `loaderState` controller has 4 methods on it. You should call these at the a
 
 ### `InfiniteLoader` Props
 
+- `loaderState: LoaderState`
+  - An instance of the `LoaderState` class.
 - `triggerLoad: () => Promise<void>` - **required**
   - The async function to call when we should attempt to load more data to show.
 - `intersectionOptions: `[`IntersectionObserverInit`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options)` = { rootMargin: "0px 0px 200px 0px" }` - optional

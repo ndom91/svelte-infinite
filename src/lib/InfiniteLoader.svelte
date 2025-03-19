@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy, type Snippet } from "svelte"
-  import { STATUS, loaderState } from "./loaderState.svelte"
+  import { STATUS, LoaderState } from "./loaderState.svelte"
 
   type InfiniteLoaderProps = {
     triggerLoad: () => Promise<void>
@@ -8,6 +8,7 @@
     loopDetectionTimeout?: number
     loopMaxCalls?: number
     intersectionOptions?: Partial<IntersectionObserver>
+    loaderState: LoaderState
     children: Snippet
     loading?: Snippet
     noResults?: Snippet
@@ -22,6 +23,7 @@
     loopDetectionTimeout = 2000,
     loopMaxCalls = 5,
     intersectionOptions = {},
+    loaderState,
     children,
     loading: loadingSnippet,
     noResults: noResultsSnippet,

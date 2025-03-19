@@ -5,7 +5,7 @@ export const STATUS = {
   ERROR: "ERROR"
 } as const
 
-class LoaderState {
+export class LoaderState {
   isFirstLoad = $state(true)
   status = $state<keyof typeof STATUS>(STATUS.READY)
   mounted = $state(false)
@@ -26,5 +26,3 @@ class LoaderState {
     this.status = STATUS.ERROR
   }
 }
-
-export const loaderState = new LoaderState()

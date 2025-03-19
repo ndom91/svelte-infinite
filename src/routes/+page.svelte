@@ -3,8 +3,9 @@
   // import SvelteLogo from "$assets/SvelteLogo.svelte"
   import { LOAD_LIMIT } from "$routes/lib/utils"
   import UserCard from "$routes/lib/UserCard.svelte"
-  import { InfiniteLoader, loaderState } from "$lib/index.js"
+  import { InfiniteLoader, LoaderState } from "$lib/index.js"
 
+  const loaderState = new LoaderState()
   const allItems = $state<{ id: number; body: string }[]>($page.data.items)
   let pageNumber = $state(1)
   let rootElement = $state<HTMLElement>()
@@ -69,6 +70,7 @@
       </span>
     </p>
     <InfiniteLoader
+      {loaderState}
       triggerLoad={loadMore}
       loopDetectionTimeout={7500}
       intersectionOptions={{ root: rootElement, rootMargin: "0px 0px 500px 0px" }}
