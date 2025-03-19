@@ -12,14 +12,15 @@
 [![](https://img.shields.io/npm/dm/svelte-infinite?style=for-the-badge&labelColor=black&color=black)](https://npmjs.org/packages/svelte-infinite)
 [![](https://img.shields.io/badge/demo-black?style=for-the-badge&logo=&logoColor=white&labelColor=black&color=black)](https://svelte-5-infinite.vercel.app)
 
-> Svelte Infinite Loader designed and rebuilt specifically for use with **Svelte 5**
+✨ Flexible  
+⏰ Infinite Loop Detection  
+📣 Control Loader State  
+🔎 `IntersectionObserver` based  
+🔥 Using Runes and Snippets  
+🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)  
 
-✨ Flexible
-⏰ Infinite Loop Detection
-📣 Control Loader State
-🔎 `IntersectionObserver` based
-🔥 Using Runes and Snippets
-🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
+> [!WARNING]
+> `v0.5.0` contains a breaking change. See [this PR](https://github.com/ndom91/svelte-infinite/pull/12) for more details including migration steps.
 
 ## 🏗️ Getting Started
 
