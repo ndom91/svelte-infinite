@@ -146,8 +146,6 @@ This is a more realistic example use-case which includes a paginated data endpoi
       {/snippet}
     </InfiniteLoader>
 </main>
-
-</script>
 ```
 
 ## ♾️ Usage
