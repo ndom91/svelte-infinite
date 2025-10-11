@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IMPORTANT INSTRUCTIONS
+- **DO NOT USE SCREENSHOTS** - I cannot read images, use kapture with DOM to get page content
+- **DO NOT CREATE UNNECESSARY FILES** - Only create files when absolutely required
+- **UPDATE CLAUDE.md FIRST** - Document all changes in this file before implementing
+- **FOLLOW EXISTING PATTERNS** - Use existing code style and conventions
+- **RUN ON SPECIFIC PORT** - Use `pnpm dev --port 51548` to start server on http://localhost:51548
+
 ## Project Overview
 
 This is **svelte-infinite**, a Svelte 5 library that provides infinite scroll functionality using IntersectionObserver and Svelte 5 runes for reactive state management.
@@ -82,6 +89,11 @@ Located in `src/routes/` with:
 - Real-world usage example with user cards
 - Mock API endpoint for testing (`api/data/+server.ts`)
 - Server-side data loading example
+- **Meal Planner Calendar**: Interactive calendar with week sections and activity tracking
+  - Week-based layout with date ranges
+  - Daily activity counters with increment functionality
+  - Save functionality for meal planning data
+  - Responsive grid layout for meal organization
 
 ## Development Guidelines
 
@@ -104,6 +116,13 @@ Located in `src/routes/` with:
 - Lazy loading of components and data
 
 ## Common Development Tasks
+
+### Meal Planner Calendar Features
+- **Activity Tracking**: Click "+ Add" buttons to increment daily activity counters
+- **Week Organization**: Calendar divided into 7-day week sections with date ranges
+- **State Management**: Uses Svelte 5 runes for reactive activity counting
+- **Save Functionality**: Persists meal planning data with Save button
+- **Responsive Design**: Grid layout adapts to different screen sizes
 
 ### Adding New Features to InfiniteLoader
 1. Update component props in `InfiniteLoader.svelte`

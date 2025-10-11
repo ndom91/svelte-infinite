@@ -2,17 +2,38 @@
   import { InfiniteLoader, LoaderState } from "$lib/index.js"
   import WeekSection from "$routes/lib/WeekSection.svelte"
   import { generateCalendarWeeks } from "$routes/lib/calendarData"
-  import type { Week } from "$routes/lib/types"
+  import type { Week, Day } from "$routes/lib/types"
 
   const loaderState = new LoaderState()
-  const calendarWeeks = $state<Week[]>([])
+  let calendarWeeks = $state<Week[]>([])
   let pageNumber = $state(1)
   let rootElement = $state<HTMLElement>()
   
   // Initialize with some starting weeks
   const startDate = new Date('2024-01-01'); // Starting from January 1, 2024
-  const initialWeeks = generateCalendarWeeks(startDate, 4);
-  calendarWeeks.push(...initialWeeks);
+  calendarWeeks = generateCalendarWeeks(startDate, 4);
+
+  // Function to handle adding an activity to a specific day
+  const addActivity = (date: string) => {
+    // Find the week containing this date
+    const weekIndex = calendarWeeks.findIndex(week => 
+      week.days.some(day => day.date === date)
+    );
+    
+    if (weekIndex !== -1) {
+      // Update the specific day
+      const dayIndex = calendarWeeks[weekIndex].days.findIndex(day => day.date === date);
+      if (dayIndex !== -1) {
+        calendarWeeks[weekIndex].days[dayIndex].activities += 1;
+        calendarWeeks[weekIndex].totalActivities += 1;
+        
+        // Trigger reactivity by creating new objects
+        calendarWeeks[weekIndex] = { ...calendarWeeks[weekIndex] };
+        calendarWeeks[weekIndex].days = [...calendarWeeks[weekIndex].days];
+        calendarWeeks = [...calendarWeeks];
+      }
+    }
+  };
 
   // Load more items on infinite scroll
   const loadMore = async () => {
@@ -61,7 +82,7 @@
       intersectionOptions={{ root: rootElement, rootMargin: "0px 0px 500px 0px" }}
     >
       {#each calendarWeeks as week (week.startDate)}
-        <WeekSection {week} />
+        <WeekSection {week} onAddActivity={addActivity} />
       {/each}
       {#snippet loading()}
         <div class="flex justify-center py-6 text-gray-400 text-sm">Loading more weeks...</div>
