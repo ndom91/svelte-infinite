@@ -13,8 +13,8 @@
   const startDate = new Date('2024-01-01'); // Starting from January 1, 2024
   calendarWeeks = generateCalendarWeeks(startDate, 4);
 
-  // Function to handle adding an activity to a specific day
-  const addActivity = (date: string) => {
+  // Function to handle adding a meal to a specific day
+  const addActivity = (date: string, meal: any) => {
     // Find the week containing this date
     const weekIndex = calendarWeeks.findIndex(week => 
       week.days.some(day => day.date === date)
@@ -24,6 +24,13 @@
       // Update the specific day
       const dayIndex = calendarWeeks[weekIndex].days.findIndex(day => day.date === date);
       if (dayIndex !== -1) {
+        // Initialize meals array if it doesn't exist
+        if (!calendarWeeks[weekIndex].days[dayIndex].meals) {
+          calendarWeeks[weekIndex].days[dayIndex].meals = [];
+        }
+        
+        // Add the meal
+        calendarWeeks[weekIndex].days[dayIndex].meals.push(meal);
         calendarWeeks[weekIndex].days[dayIndex].activities += 1;
         calendarWeeks[weekIndex].totalActivities += 1;
         

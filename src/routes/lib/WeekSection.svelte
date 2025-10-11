@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Week, Day } from './types';
+  import MealSelectionModal from './MealSelectionModal.svelte';
   
   const { week, onAddActivity } = $props<{ 
     week: Week; 
-    onAddActivity: (date: string) => void 
+    onAddActivity: (date: string, meal: any) => void 
   }>();
 
   // Sample meal data
@@ -43,6 +44,19 @@
         return '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>';
     }
   };
+
+  // Modal state
+  let isModalOpen = $state(false);
+  let selectedDate = $state('');
+
+  const openMealModal = (date: string) => {
+    selectedDate = date;
+    isModalOpen = true;
+  };
+
+  const handleSelectMeal = (meal: any) => {
+    onAddActivity(selectedDate, meal);
+  };
 </script>
 
 <section class="bg-white border-b border-gray-200">
@@ -75,10 +89,9 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex gap-3 px-3 py-2 overflow-x-auto" style="scroll-snap-type: x mandatory;">
-            <!-- Sample meal cards for demo -->
-            {#if day.activities > 0}
-              {#each Array(Math.min(day.activities, 2)) as _, i}
-                {@const meal = sampleMeals[(dayIndex + i) % sampleMeals.length]}
+            <!-- Meal cards -->
+            {#if day.meals && day.meals.length > 0}
+              {#each day.meals as meal}
                 <div 
                   role="button" 
                   tabindex="0" 
@@ -108,7 +121,7 @@
             
             <!-- Add button -->
             <button 
-              onclick={() => onAddActivity(day.date)}
+              onclick={() => openMealModal(day.date)}
               class="flex-shrink-0 w-36 h-[88px] rounded-xl border flex items-center gap-1 text-gray-500 hover:bg-white hover:border-white hover:text-gray-700 transition-colors scroll-snap-align-start"
               style="background-color: rgb(249, 250, 251); border-color: rgb(249, 250, 251); justify-content: flex-start; padding-left: 0.75rem;"
             >
@@ -123,4 +136,10 @@
       </div>
     {/each}
   </div>
+
+  <!-- Meal Selection Modal -->
+  <MealSelectionModal 
+    bind:isOpen={isModalOpen}
+    onSelectMeal={handleSelectMeal}
+  />
 </section>
