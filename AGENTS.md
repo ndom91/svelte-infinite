@@ -8,6 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **UPDATE CLAUDE.md FIRST** - Document all changes in this file before implementing
 - **FOLLOW EXISTING PATTERNS** - Use existing code style and conventions
 - **RUN ON SPECIFIC PORT** - Use `pnpm dev --port 51548` to start server on http://localhost:51548
+- **THIS IS SVELTE 5** - This project uses Svelte 5 with runes ($state, $effect, etc.), not Svelte 3/4 stores
+- **SERVER MANAGEMENT** - Tail server.log to monitor existing servers. This is Vite with hot reload - keep ONE server running, don't start multiple servers
+- **SKIP PNPM TEST** - `pnpm test` is not known to be good tests at the moment avoid it and use playwright mcp instead.
 
 ## Project Overview
 

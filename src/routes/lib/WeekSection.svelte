@@ -1,10 +1,13 @@
 <script lang="ts">
-  import type { Week, Day } from './types';
+  import { dndzone } from 'svelte-dnd-action';
+  import { flip } from 'svelte/animate';
+  import type { Week, Day, Meal, DndEvent } from './types';
   import MealSelectionModal from './MealSelectionModal.svelte';
   
-  const { week, onAddActivity } = $props<{ 
+  const { week, onAddActivity, onMoveMeal } = $props<{ 
     week: Week; 
-    onAddActivity: (date: string, meal: any) => void 
+    onAddActivity: (date: string, meal: any) => void;
+    onMoveMeal?: (fromDate: string, toDate: string, mealId: string) => void;
   }>();
 
   // Sample meal data
@@ -62,6 +65,32 @@
   const handleSelectMeal = (meal: any) => {
     onAddActivity(selectedDate, meal);
   };
+
+  // Drag and drop handlers
+  const handleDndConsider = (e: CustomEvent<any>, date: string) => {
+    // Update the meals array during drag operation
+    const dayIndex = week.days.findIndex((day: Day) => day.date === date);
+    if (dayIndex !== -1 && week.days[dayIndex].meals) {
+      week.days[dayIndex].meals = e.detail.items as Meal[];
+      // Trigger reactivity
+      week.days = [...week.days];
+    }
+  };
+
+  const handleDndFinalize = (e: CustomEvent<any>, date: string) => {
+    // Finalize the meal arrangement for the current day
+    const dayIndex = week.days.findIndex((day: Day) => day.date === date);
+    if (dayIndex !== -1) {
+      week.days[dayIndex].meals = e.detail.items as Meal[];
+      week.days[dayIndex].activities = (e.detail.items as Meal[]).length;
+      
+      // Update total activities for the week
+      week.totalActivities = week.days.reduce((sum: number, day: Day) => sum + (day.meals?.length || 0), 0);
+      
+      // Trigger reactivity
+      week.days = [...week.days];
+    }
+  };
 </script>
 
 <section class="bg-white border-b border-gray-200">
@@ -79,7 +108,7 @@
         Reset
       </button>
     </div>
-    <p class="text-sm text-gray-500 mt-1">Total: {week.totalActivities} activity{week.totalActivities !== 1 ? 'ies' : ''}</p>
+    <p class="text-sm text-gray-500 mt-1">Total: {week.totalActivities} activity{week.totalActivities !== 1 ? 'ies' : 'y'}</p>
   </div>
 
   <!-- Days -->
@@ -94,15 +123,29 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex gap-3 px-3 py-2 overflow-x-auto" style="scroll-snap-type: x mandatory;">
-            <!-- Meal cards -->
-            {#if day.meals && day.meals.length > 0}
-              {#each day.meals as meal}
+            <!-- Meal cards drag and drop zone -->
+            <div 
+              use:dndzone={{
+                items: day.meals || [],
+                flipDurationMs: 200,
+                type: 'meal',
+                dropTargetClasses: ['drag-over'],
+                dropTargetStyle: { outline: '2px solid #3b82f6' },
+                centreDraggedOnCursor: true
+              }}
+              onconsider={(e) => handleDndConsider(e, day.date)}
+              onfinalize={(e) => handleDndFinalize(e, day.date)}
+              class="flex gap-3 min-h-[88px] w-full"
+              data-date={day.date}
+            >
+              {#each day.meals || [] as meal (meal.id)}
                 <div 
+                  animate:flip={{duration: 200}}
                   role="button" 
                   tabindex="0" 
                   aria-disabled="false" 
                   aria-roledescription="draggable" 
-                  class="flex-shrink-0 w-52 p-4 bg-white rounded-xl shadow-sm border border-gray-100 {getBorderColor(meal.color)} border-l-4 cursor-pointer transition-all hover:shadow-md active:scale-[0.98] scroll-snap-align-start"
+                  class="flex-shrink-0 w-52 p-4 bg-white rounded-xl shadow-sm border border-gray-100 {getBorderColor(meal.color)} border-l-4 cursor-move transition-all hover:shadow-md active:scale-[0.98] scroll-snap-align-start"
                 >
                   <div class="flex items-start justify-between">
                     <div class="flex-1 min-w-0">
@@ -122,20 +165,20 @@
                   </div>
                 </div>
               {/each}
-            {/if}
-            
-            <!-- Add button -->
-            <button 
-              onclick={() => openMealModal(day.date)}
-              class="flex-shrink-0 w-36 h-[88px] rounded-xl border flex items-center gap-1 text-gray-500 hover:bg-white hover:border-white hover:text-gray-700 transition-colors scroll-snap-align-start"
-              style="background-color: rgb(249, 250, 251); border-color: rgb(249, 250, 251); justify-content: flex-start; padding-left: 0.75rem;"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-4 h-4 flex-shrink-0">
-                <path d="M5 12h14"></path>
-                <path d="M12 5v14"></path>
-              </svg>
-              <span class="font-medium text-sm whitespace-nowrap">Add</span>
-            </button>
+              
+              <!-- Add button -->
+              <button 
+                onclick={() => openMealModal(day.date)}
+                class="flex-shrink-0 w-36 h-[88px] rounded-xl border flex items-center gap-1 text-gray-500 hover:bg-white hover:border-white hover:text-gray-700 transition-colors scroll-snap-align-start"
+                style="background-color: rgb(249, 250, 251); border-color: rgb(249, 250, 251); justify-content: flex-start; padding-left: 0.75rem;"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-4 h-4 flex-shrink-0">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5v14"></path>
+                </svg>
+                <span class="font-medium text-sm whitespace-nowrap">Add</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -148,3 +191,11 @@
     onSelectMeal={handleSelectMeal}
   />
 </section>
+
+<style>
+  .drag-over {
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+</style>

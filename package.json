@@ -82,5 +82,8 @@
     "vite": "^5.4.11",
     "vitest": "^2.1.5"
   },
-  "packageManager": "pnpm@9.0.6+sha256.0624e30eff866cdeb363b15061bdb7fd9425b17bc1bb42c22f5f4efdea21f6b3"
+  "packageManager": "pnpm@9.0.6+sha256.0624e30eff866cdeb363b15061bdb7fd9425b17bc1bb42c22f5f4efdea21f6b3",
+  "dependencies": {
+    "svelte-dnd-action": "^0.9.65"
+  }
 }

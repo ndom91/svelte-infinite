@@ -41,6 +41,52 @@
     }
   };
 
+  // Function to handle moving a meal between different dates
+  const moveMeal = (fromDate: string, toDate: string, mealId: string) => {
+    // Find the source week and day
+    const fromWeekIndex = calendarWeeks.findIndex(week => 
+      week.days.some(day => day.date === fromDate)
+    );
+    
+    // Find the target week and day
+    const toWeekIndex = calendarWeeks.findIndex(week => 
+      week.days.some(day => day.date === toDate)
+    );
+    
+    if (fromWeekIndex !== -1 && toWeekIndex !== -1) {
+      const fromDayIndex = calendarWeeks[fromWeekIndex].days.findIndex(day => day.date === fromDate);
+      const toDayIndex = calendarWeeks[toWeekIndex].days.findIndex(day => day.date === toDate);
+      
+      if (fromDayIndex !== -1 && toDayIndex !== -1) {
+        // Find the meal to move
+        const fromMeals = calendarWeeks[fromWeekIndex].days[fromDayIndex].meals || [];
+        const mealToMove = fromMeals.find(meal => meal.id === mealId);
+        
+        if (mealToMove) {
+          // Remove meal from source day
+          calendarWeeks[fromWeekIndex].days[fromDayIndex].meals = fromMeals.filter(meal => meal.id !== mealId);
+          calendarWeeks[fromWeekIndex].days[fromDayIndex].activities = calendarWeeks[fromWeekIndex].days[fromDayIndex].meals.length;
+          calendarWeeks[fromWeekIndex].totalActivities = calendarWeeks[fromWeekIndex].days.reduce((sum, day) => sum + (day.meals?.length || 0), 0);
+          
+          // Add meal to target day
+          if (!calendarWeeks[toWeekIndex].days[toDayIndex].meals) {
+            calendarWeeks[toWeekIndex].days[toDayIndex].meals = [];
+          }
+          calendarWeeks[toWeekIndex].days[toDayIndex].meals.push(mealToMove);
+          calendarWeeks[toWeekIndex].days[toDayIndex].activities = calendarWeeks[toWeekIndex].days[toDayIndex].meals.length;
+          calendarWeeks[toWeekIndex].totalActivities = calendarWeeks[toWeekIndex].days.reduce((sum, day) => sum + (day.meals?.length || 0), 0);
+          
+          // Trigger reactivity
+          calendarWeeks[fromWeekIndex] = { ...calendarWeeks[fromWeekIndex] };
+          calendarWeeks[fromWeekIndex].days = [...calendarWeeks[fromWeekIndex].days];
+          calendarWeeks[toWeekIndex] = { ...calendarWeeks[toWeekIndex] };
+          calendarWeeks[toWeekIndex].days = [...calendarWeeks[toWeekIndex].days];
+          calendarWeeks = [...calendarWeeks];
+        }
+      }
+    }
+  };
+
   // Load more items on infinite scroll
   const loadMore = async () => {
     try {
@@ -73,12 +119,6 @@
 </script>
 
 <div class="flex flex-col h-screen bg-gray-50">
-  <!-- Header -->
-  <header class="flex justify-between items-center px-6 py-4 border-b bg-white sticky top-0 z-10">
-    <h1 class="text-xl font-semibold text-gray-900">MealPlanner Calendar View</h1>
-    <button class="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">Save</button>
-  </header>
-
   <!-- Scrollable content -->
   <div class="flex-1 overflow-y-auto" bind:this={rootElement}>
     <InfiniteLoader
@@ -88,7 +128,7 @@
       intersectionOptions={{ root: rootElement, rootMargin: "0px 0px 500px 0px" }}
     >
       {#each calendarWeeks as week (week.startDate)}
-        <WeekSection {week} onAddActivity={addActivity} />
+        <WeekSection {week} onAddActivity={addActivity} onMoveMeal={moveMeal} />
       {/each}
       {#snippet loading()}
         <div class="flex justify-center py-6 text-gray-400 text-sm">Loading more weeks...</div>

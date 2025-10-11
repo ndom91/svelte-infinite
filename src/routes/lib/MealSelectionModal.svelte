@@ -4,6 +4,9 @@
     onSelectMeal: (meal: any) => void;
   }>();
 
+  // Generate unique ID for meals
+  const generateId = () => Math.random().toString(36).substr(2, 9);
+
   // Sample meal data for the modal
   const availableMeals = [
     { name: "Spaghetti Bolognese", time: "45 min", icon: "utensils", color: "green" },
@@ -25,7 +28,12 @@
   );
 
   const handleSelectMeal = (meal: any) => {
-    onSelectMeal(meal);
+    // Add unique ID to the meal for drag and drop tracking
+    const mealWithId = {
+      ...meal,
+      id: generateId()
+    };
+    onSelectMeal(mealWithId);
     isOpen = false;
   };
 
@@ -73,27 +81,14 @@
         </div>
       </div>
 
-      <!-- Search and filters -->
+      <!-- Search -->
       <div class="space-y-3">
         <input 
           type="text" 
           class="flex h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm w-full" 
-          placeholder="Search recipes or type #ingredient..." 
+          placeholder="Search recipes..." 
           bind:value={searchTerm}
         />
-        <div class="flex items-center gap-2">
-          <button class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50 border bg-white shadow-xs hover:bg-gray-50 border-gray-300 h-8 rounded-md px-3 text-xs gap-1" type="button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus h-4 w-4">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>
-            Ingredient
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down h-4 w-4">
-              <path d="m6 9 6 6 6-6"></path>
-            </svg>
-          </button>
-          <div class="flex flex-wrap gap-2"></div>
-        </div>
       </div>
 
       <!-- Meal list -->

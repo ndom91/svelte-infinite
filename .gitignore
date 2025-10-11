@@ -13,3 +13,4 @@ vite.config.ts.timestamp-*
 server.log
 .vscode
 CLAUDE.md
+.claude
