@@ -37,8 +37,8 @@
   // Track load counts to avoid infinite loops
   class LoopTracker {
     coolingOff = false
-    #coolingOffTimer: number | null = null
-    #timer: number | null = null
+    #coolingOffTimer: NodeJS.Timeout | null = null
+    #timer: NodeJS.Timeout | null = null
     #count = 0
 
     // On each call, increment the count and reset the timer
