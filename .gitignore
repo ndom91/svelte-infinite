@@ -11,3 +11,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .changecolor
 server.log
+.vscode
+CLAUDE.md

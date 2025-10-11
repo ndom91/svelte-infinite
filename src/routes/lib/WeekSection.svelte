@@ -20,6 +20,11 @@
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
   };
 
+  const formatYear = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.getFullYear();
+  };
+
   const formatDayName = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', { weekday: 'short' });
@@ -63,7 +68,7 @@
   <div class="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-20">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <h2 class="text-lg font-semibold text-gray-900">{formatDate(week.startDate)} - {formatDate(week.endDate)}</h2>
+        <h2 class="text-lg font-semibold text-gray-900">{formatDate(week.startDate)} - {formatDate(week.endDate)} {formatYear(week.startDate)}</h2>
         <span class="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full">WEEK {week.weekNumber}</span>
       </div>
       <button class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">

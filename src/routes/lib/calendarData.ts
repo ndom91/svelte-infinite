@@ -1,5 +1,22 @@
 import type { Week, Day } from './types';
 
+// UK week numbering (ISO 8601) - weeks start on Monday
+function getUKWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return weekNo;
+}
+
+function getStartOfUKWeek(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+  return new Date(d.setDate(diff));
+}
+
 export function generateWeekData(startDate: Date, weekNumber: number): Week {
   const days: Day[] = [];
   const endDate = new Date(startDate);
@@ -12,14 +29,14 @@ export function generateWeekData(startDate: Date, weekNumber: number): Week {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     
-    // Random number of activities (0-3)
-    const activities = Math.floor(Math.random() * 4);
-    totalActivities += activities;
+    // Start with no activities - user will add meals manually
+    const activities = 0;
     
     days.push({
       date: currentDate.toISOString().split('T')[0], // YYYY-MM-DD format
       dayName: currentDate.toLocaleDateString('en-US', { weekday: 'long' }),
-      activities
+      activities,
+      meals: []
     });
   }
   
@@ -37,17 +54,22 @@ export function generateCalendarWeeks(startDate: Date, count: number): Week[] {
   let currentDate = new Date(startDate);
   
   for (let i = 0; i < count; i++) {
-    // Find the start of the week (Monday)
-    const dayOfWeek = currentDate.getDay();
-    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const weekStart = new Date(currentDate);
-    weekStart.setDate(currentDate.getDate() - daysFromMonday);
+    // Find the start of the week (Monday) - UK format
+    const weekStart = getStartOfUKWeek(currentDate);
+    const weekNumber = getUKWeekNumber(weekStart);
     
-    weeks.push(generateWeekData(weekStart, i + 1));
+    weeks.push(generateWeekData(weekStart, weekNumber));
     
     // Move to next week
     currentDate.setDate(currentDate.getDate() + 7);
   }
   
   return weeks;
+}
+
+// Helper function to generate weeks starting from current UK week
+export function generateCalendarWeeksFromCurrent(count: number): Week[] {
+  const today = new Date();
+  const currentWeekStart = getStartOfUKWeek(today);
+  return generateCalendarWeeks(currentWeekStart, count);
 }

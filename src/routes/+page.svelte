@@ -1,7 +1,7 @@
 <script lang="ts">
   import { InfiniteLoader, LoaderState } from "$lib/index.js"
   import WeekSection from "$routes/lib/WeekSection.svelte"
-  import { generateCalendarWeeks } from "$routes/lib/calendarData"
+  import { generateCalendarWeeks, generateCalendarWeeksFromCurrent } from "$routes/lib/calendarData"
   import type { Week, Day } from "$routes/lib/types"
 
   const loaderState = new LoaderState()
@@ -9,9 +9,8 @@
   let pageNumber = $state(1)
   let rootElement = $state<HTMLElement>()
   
-  // Initialize with some starting weeks
-  const startDate = new Date('2024-01-01'); // Starting from January 1, 2024
-  calendarWeeks = generateCalendarWeeks(startDate, 4);
+  // Initialize with current UK week (Week 41, Oct 6-12, 2025)
+  calendarWeeks = generateCalendarWeeksFromCurrent(4);
 
   // Function to handle adding a meal to a specific day
   const addActivity = (date: string, meal: any) => {
