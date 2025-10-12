@@ -108,7 +108,7 @@
         Reset
       </button>
     </div>
-    <p class="text-sm text-gray-500 mt-1">Total: {week.totalActivities} activity{week.totalActivities !== 1 ? 'ies' : 'y'}</p>
+    <p class="text-sm text-gray-500 mt-1">Total: {week.totalActivities} activit{week.totalActivities === 1 ? 'y' : 'ies'}</p>
   </div>
 
   <!-- Days -->
