@@ -49,7 +49,7 @@
       // Cooldown, after 2s, reset count to 0
       this.#timer = setTimeout(() => {
         this.#count = 0
-      }, loopDetectionTimeout)
+      }, loopDetectionTimeout) as unknown as number
 
       // If count > loopMaxCalls, begin cool-down period
       // and start timer to reset loop count tracker
@@ -60,7 +60,7 @@
         this.#coolingOffTimer = setTimeout(() => {
           this.coolingOff = false
           this.#count = 0
-        }, loopTimeout)
+        }, loopTimeout) as unknown as number
       }
     }
 
