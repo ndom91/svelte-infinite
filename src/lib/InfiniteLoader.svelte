@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy, type Snippet } from "svelte"
+  import { type Snippet } from "svelte"
   import { STATUS, LoaderState } from "./loaderState.svelte"
 
   type InfiniteLoaderProps = {
@@ -14,7 +14,7 @@
     noResults?: Snippet
     noData?: Snippet
     coolingOff?: Snippet
-    error?: Snippet<[typeof attemptLoad]>
+    error?: Snippet<[() => Promise<void>]>
   }
 
   const {
@@ -32,52 +32,21 @@
     error: errorSnippet
   }: InfiniteLoaderProps = $props()
 
-  const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
-
-  // Track load counts to avoid infinite loops
-  class LoopTracker {
-    coolingOff = false
-    #coolingOffTimer: number | null = null
-    #timer: number | null = null
-    #count = 0
-
-    // On each call, increment the count and reset the timer
-    track() {
-      this.#count += 1
-
-      clearTimeout(this.#timer!)
-      // Cooldown, after 2s, reset count to 0
-      this.#timer = setTimeout(() => {
-        this.#count = 0
-      }, loopDetectionTimeout)
-
-      // If count > loopMaxCalls, begin cool-down period
-      // and start timer to reset loop count tracker
-      if (this.#count >= loopMaxCalls) {
-        console.error(ERROR_INFINITE_LOOP)
-
-        this.coolingOff = true
-        this.#coolingOffTimer = setTimeout(() => {
-          this.coolingOff = false
-          this.#count = 0
-        }, loopTimeout)
-      }
-    }
-
-    destroy() {
-      if (this.#timer) {
-        clearTimeout(this.#timer)
-      }
-      if (this.#coolingOffTimer) {
-        clearTimeout(this.#coolingOffTimer)
-      }
-    }
-  }
-
-  const loopTracker = new LoopTracker()
+  const getErrorInfiniteLoop = $derived(
+    `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
+  )
 
   let intersectionTarget = $state<HTMLElement>()
   let observer = $state<IntersectionObserver>()
+  let loopTracker = $state<{
+    coolingOff: boolean
+    count: number
+    timers: (number | null)[]
+  }>({
+    coolingOff: false,
+    count: 0,
+    timers: []
+  })
 
   let showLoading = $derived(loaderState.status === STATUS.LOADING)
   let showError = $derived(loaderState.status === STATUS.ERROR)
@@ -85,10 +54,34 @@
   let showNoData = $derived(loaderState.status === STATUS.COMPLETE && !loaderState.isFirstLoad)
   let showCoolingOff = $derived(loaderState.status !== STATUS.COMPLETE && loopTracker.coolingOff)
 
+  function trackLoad() {
+    loopTracker.count += 1
+
+    loopTracker.timers.forEach((timer) => {
+      if (timer !== null) clearTimeout(timer)
+    })
+    loopTracker.timers = []
+
+    loopTracker.timers.push(
+      setTimeout(() => {
+        loopTracker.count = 0
+      }, loopDetectionTimeout)
+    )
+
+    if (loopTracker.count >= loopMaxCalls) {
+      console.error(getErrorInfiniteLoop)
+
+      loopTracker.coolingOff = true
+      loopTracker.timers.push(
+        setTimeout(() => {
+          loopTracker.coolingOff = false
+          loopTracker.count = 0
+        }, loopTimeout)
+      )
+    }
+  }
+
   async function attemptLoad() {
-    // If we're complete, don't attempt to load again
-    // If we're not ready (i.e. in the middle of a fetch) don't attempt to load again
-    // However, if we're in an error state, allow the user to retry via btn click
     if (
       loaderState.status === STATUS.COMPLETE ||
       (loaderState.status !== STATUS.READY && loaderState.status !== STATUS.ERROR)
@@ -98,15 +91,12 @@
 
     loaderState.status = STATUS.LOADING
 
-    // Skip loading if we're in infinite loop cool-off
     if (!loopTracker.coolingOff) {
       await triggerLoad()
-      loopTracker.track()
+      trackLoad()
     }
 
-    // @ts-expect-error - client can set status to 'COMPLETE' inside the
-    // `triggerLoad` fn above via `loaderState.complete()`, TS obviously doesn't know this.
-    if (loaderState.status !== STATUS.ERROR && loaderState.status !== STATUS.COMPLETE) {
+    if (loaderState.status === STATUS.LOADING) {
       if (loaderState.status === STATUS.LOADING) {
         loaderState.isFirstLoad = false
         loaderState.status = STATUS.READY
@@ -114,8 +104,8 @@
     }
   }
 
-  onMount(() => {
-    if (observer || !intersectionTarget) return
+  $effect(() => {
+    if (!intersectionTarget) return
 
     const appliedIntersectionOptions = {
       rootMargin: "0px 0px 200px 0px",
@@ -129,16 +119,14 @@
     observer.observe(intersectionTarget)
 
     loaderState.mounted = true
-  })
 
-  onDestroy(() => {
-    if (loaderState.mounted) {
+    return () => {
       if (observer) {
         observer.disconnect()
       }
-      if (loopTracker) {
-        loopTracker.destroy()
-      }
+      loopTracker.timers.forEach((timer) => {
+        if (timer !== null) clearTimeout(timer)
+      })
     }
   })
 </script>
