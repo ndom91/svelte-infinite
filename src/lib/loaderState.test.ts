@@ -11,7 +11,6 @@ describe("LoaderState", () => {
   it("initializes with correct default values", () => {
     expect(state.isFirstLoad).toBe(true)
     expect(state.status).toBe(STATUS.READY)
-    expect(state.mounted).toBe(false)
   })
 
   describe("loaded()", () => {

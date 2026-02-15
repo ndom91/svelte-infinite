@@ -7,7 +7,7 @@
     loopTimeout?: number
     loopDetectionTimeout?: number
     loopMaxCalls?: number
-    intersectionOptions?: Partial<IntersectionObserver>
+    intersectionOptions?: IntersectionObserverInit
     loaderState: LoaderState
     children: Snippet
     loading?: Snippet
@@ -32,9 +32,7 @@
     error: errorSnippet
   }: InfiniteLoaderProps = $props()
 
-  const getErrorInfiniteLoop = $derived(
-    `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
-  )
+  const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
 
   let intersectionTarget = $state<HTMLElement>()
   let loopTracker = $state<{
@@ -68,7 +66,7 @@
     )
 
     if (loopTracker.count >= loopMaxCalls) {
-      console.error(getErrorInfiniteLoop)
+      console.error(ERROR_INFINITE_LOOP)
 
       loopTracker.coolingOff = true
       loopTracker.timers.push(
@@ -96,10 +94,8 @@
     }
 
     if (loaderState.status === STATUS.LOADING) {
-      if (loaderState.status === STATUS.LOADING) {
-        loaderState.isFirstLoad = false
-        loaderState.status = STATUS.READY
-      }
+      loaderState.isFirstLoad = false
+      loaderState.status = STATUS.READY
     }
   }
 

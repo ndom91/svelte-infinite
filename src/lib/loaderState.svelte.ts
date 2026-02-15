@@ -8,7 +8,6 @@ export const STATUS = {
 export class LoaderState {
   isFirstLoad = $state(true)
   status = $state<keyof typeof STATUS>(STATUS.READY)
-  mounted = $state(false)
 
   loaded = () => {
     if (this.isFirstLoad) this.isFirstLoad = false
