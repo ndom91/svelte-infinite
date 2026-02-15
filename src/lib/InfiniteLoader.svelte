@@ -38,6 +38,7 @@
 
   let intersectionTarget = $state<HTMLElement>()
   let observer = $state<IntersectionObserver>()
+  let mounted = $state(false)
   let loopTracker = $state<{
     coolingOff: boolean
     count: number
@@ -105,20 +106,20 @@
   }
 
   $effect(() => {
-    if (!intersectionTarget) return
+    if (!intersectionTarget || mounted) return
 
     const appliedIntersectionOptions = {
       rootMargin: "0px 0px 200px 0px",
       ...intersectionOptions
     }
     observer = new IntersectionObserver(async (entries) => {
-      if (entries[0]?.isIntersecting && loaderState.mounted) {
+      if (entries[0]?.isIntersecting) {
         await attemptLoad()
       }
     }, appliedIntersectionOptions)
     observer.observe(intersectionTarget)
 
-    loaderState.mounted = true
+    mounted = true
 
     return () => {
       if (observer) {
