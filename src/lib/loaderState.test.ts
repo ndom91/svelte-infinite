@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+import { describe, it, expect, beforeEach } from "vitest"
 import { STATUS, LoaderState } from "./loaderState.svelte"
 
 describe("LoaderState", () => {
@@ -36,14 +36,14 @@ describe("LoaderState", () => {
   })
 
   describe("complete()", () => {
-    it("sets isFirstLoad to false on first call", () => {
+    it("keeps isFirstLoad true so the loader can render noResults", () => {
       state.complete()
 
-      expect(state.isFirstLoad).toBe(false)
+      expect(state.isFirstLoad).toBe(true)
     })
 
-    it("keeps isFirstLoad false on subsequent calls", () => {
-      state.complete()
+    it("does not change isFirstLoad after results have loaded", () => {
+      state.loaded()
       state.complete()
 
       expect(state.isFirstLoad).toBe(false)

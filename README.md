@@ -17,7 +17,7 @@
 📣 Control Loader State  
 🔎 `IntersectionObserver` based  
 🔥 Using Runes and Snippets  
-🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)  
+🧑‍🔧 **Demo**: [svelte-5-infinite.vercel.app](https://svelte-5-infinite.vercel.app)
 
 > [!WARNING]
 > `v0.5.0` contains a breaking change. See [this PR](https://github.com/ndom91/svelte-infinite/pull/12) for more details including migration steps.
@@ -42,7 +42,7 @@ yarn add svelte-infinite
   const allItems = $state([])
 
   const loadMore = async () => {
-    const res = fetch("...")
+    const res = await fetch("...")
     const data = await res.json()
     allItems.push(...data)
     loaderState.loaded()
@@ -70,7 +70,7 @@ This is a more realistic example use-case which includes a paginated data endpoi
   const LOAD_LIMIT = 20
   // Assume `$page.data.items` is the `+page.server.ts` server-side loaded
   // and rendered initial 20 items of the list
-  const allItems = $state<{ id: number, body: string }[]>($page.data.items)
+  const allItems = $state<{ id: number; body: string }[]>($page.data.items)
   let pageNumber = $state(1)
 
   // 1. This `loadMore` function is what we'll pass the InfiniteLoader component
@@ -84,7 +84,7 @@ This is a more realistic example use-case which includes a paginated data endpoi
       // If there are less results on the first page (page.server loaded data)
       // than the limit, don't keep trying to fetch more. We're done.
       if (allItems.length < LOAD_LIMIT) {
-        loaderState.complete()               // <--- using loaderState
+        loaderState.complete() // <--- using loaderState
         return
       }
 
@@ -98,7 +98,7 @@ This is a more realistic example use-case which includes a paginated data endpoi
       // available to page through
 
       if (!dataResponse.ok) {
-        loaderState.error()                 // <--- using loaderState
+        loaderState.error() // <--- using loaderState
 
         // On errors, set the pageNumber back so we can retry
         // that page's data on the next 'loadMore' attempt
@@ -115,36 +115,35 @@ This is a more realistic example use-case which includes a paginated data endpoi
       // If there are more (or equal) number of items loaded as are totally available
       // from the API, don't keep trying to fetch more. We're done.
       if (allItems.length >= data.totalCount) {
-        loaderState.complete()               // <--- using loaderState
+        loaderState.complete() // <--- using loaderState
       } else {
-        loaderState.loaded()                 // <--- using loaderState
+        loaderState.loaded() // <--- using loaderState
       }
     } catch (error) {
       console.error(error)
-      loaderState.error()                   // <--- using loaderState
+      loaderState.error() // <--- using loaderState
       pageNumber -= 1
     }
   }
 </script>
 
 <main class="container">
+  <!-- 2. Here you wrap your items with the InfiniteLoader component -->
+  <InfiniteLoader {loaderState} triggerLoad={loadMore}>
+    {#each allItems as user (user.id)}
+      <UserCard {user} />
+    {/each}
 
-    <!-- 2. Here you wrap your items with the InfiniteLoader component -->
-    <InfiniteLoader {loaderState} triggerLoad={loadMore}>
-      {#each allItems as user (user.id)}
-        <UserCard {user} />
-      {/each}
-
-      <!-- 3. There are a few optional snippets for customizing what is shown at the bottom
+    <!-- 3. There are a few optional snippets for customizing what is shown at the bottom
            of the scroller in various states, see the 'Snippets' section for more details -->
-      {#snippet loading()}
-        Loading...
-      {/snippet}
-      {#snippet error(load)}
-        <div>Error fetching data</div>
-        <button onclick={load}>Retry</button>
-      {/snippet}
-    </InfiniteLoader>
+    {#snippet loading()}
+      Loading...
+    {/snippet}
+    {#snippet error(load)}
+      <div>Error fetching data</div>
+      <button onclick={load}>Retry</button>
+    {/snippet}
+  </InfiniteLoader>
 </main>
 ```
 
@@ -166,7 +165,7 @@ The `loaderState` controller has 4 methods on it. You should call these at the a
 - `loaderState.error()`
   - Designed to be called after a failed fetch or any other error. This will cause the `InfiniteLoader` to render a "Retry" button by default, or the `error` snippet.
 - `loaderState.complete()`
-  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render a "No more data" string, or the `noData` snippet.
+  - Designed to be called when you've reached the end of your list and there are no more items to fetch. This will render "No results" (or `noResults`) if no page has loaded yet; otherwise it renders "No more data" (or `noData`).
 - `loaderState.reset()`
   - Designed to be called when you want to reset the state of the `InfiniteLoader` to its initial state, for example if there is a search input tied to your data and the user enters a new query.
 
@@ -197,7 +196,7 @@ Snippets [replace slots](https://svelte-5-preview.vercel.app/docs/snippets#snipp
 - `noData`
   - Shown when `loaderState.complete()` is called, indicating we've fetched and displayed all available data.
 - `coolingOff`
-  - Shown when `loaderState !== "COMPLETE"` and a loop has been detected. Will disappear and `loopTimeout` when the cooling off period expires.
+  - Shown when the loader has not completed and a loop has been detected. It disappears when the `loopTimeout` cooling-off period expires.
 - `error`
   - Shown when there is an error or `loaderState.error()` has been called. The snippet has an `attemptLoad` parameter passed to it which is just the internal `triggerLoad` function, designed for a "Retry" button or similar.
 

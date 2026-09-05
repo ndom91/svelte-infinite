@@ -17,6 +17,7 @@ export default ts.config(
       "**/.DS_Store",
       "**/node_modules",
       "build",
+      "dist",
       ".svelte-kit",
       "package",
       "**/.env",
@@ -45,6 +46,12 @@ export default ts.config(
       parserOptions: {
         extraFileExtensions: [".svelte"]
       }
+    }
+  },
+  {
+    files: ["**/*.{ts,svelte}"],
+    rules: {
+      "no-undef": "off"
     }
   },
   {

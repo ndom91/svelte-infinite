@@ -49,15 +49,15 @@
     "!dist/**/*.spec.*"
   ],
   "peerDependencies": {
-    "svelte": "^5.0.0-0"
+    "svelte": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@sveltejs/adapter-auto": "^7.0.1",
-    "@sveltejs/kit": "^2.51.0",
-    "@sveltejs/package": "^2.5.7",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "@sveltejs/kit": "^2.70.3",
+    "@sveltejs/package": "^2.5.8",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@types/eslint": "^9.6.1",
     "@typescript-eslint/eslint-plugin": "^8.55.0",
     "@typescript-eslint/parser": "^8.55.0",
@@ -67,15 +67,15 @@
     "globals": "^17.3.0",
     "prettier": "^3.8.1",
     "prettier-plugin-svelte": "^3.4.1",
-    "publint": "^0.3.17",
-    "svelte": "^5.51.0",
-    "svelte-check": "^4.4.0",
+    "publint": "^0.3.24",
+    "svelte": "^5.57.0",
+    "svelte-check": "^4.7.6",
     "tslib": "^2.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.55.0",
-    "typescript-svelte-plugin": "^0.3.50",
-    "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "typescript-svelte-plugin": "^0.3.52",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@9.0.6+sha256.0624e30eff866cdeb363b15061bdb7fd9425b17bc1bb42c22f5f4efdea21f6b3"
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Snippet } from "svelte"
+  import { onDestroy, type Snippet } from "svelte"
   import { STATUS, LoaderState } from "./loaderState.svelte"
 
   type InfiniteLoaderProps = {
@@ -32,18 +32,15 @@
     error: errorSnippet
   }: InfiniteLoaderProps = $props()
 
-  const ERROR_INFINITE_LOOP = `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again..`
-
-  let intersectionTarget = $state<HTMLElement>()
   let loopTracker = $state<{
     coolingOff: boolean
     count: number
-    timers: (number | null)[]
   }>({
     coolingOff: false,
-    count: 0,
-    timers: []
+    count: 0
   })
+  let detectionTimer: ReturnType<typeof setTimeout> | undefined
+  let coolingOffTimer: ReturnType<typeof setTimeout> | undefined
 
   let showLoading = $derived(loaderState.status === STATUS.LOADING)
   let showError = $derived(loaderState.status === STATUS.ERROR)
@@ -51,36 +48,36 @@
   let showNoData = $derived(loaderState.status === STATUS.COMPLETE && !loaderState.isFirstLoad)
   let showCoolingOff = $derived(loaderState.status !== STATUS.COMPLETE && loopTracker.coolingOff)
 
+  function clearTimers() {
+    clearTimeout(detectionTimer)
+    clearTimeout(coolingOffTimer)
+  }
+
   function trackLoad() {
     loopTracker.count += 1
 
-    loopTracker.timers.forEach((timer) => {
-      if (timer !== null) clearTimeout(timer)
-    })
-    loopTracker.timers = []
-
-    loopTracker.timers.push(
-      setTimeout(() => {
-        loopTracker.count = 0
-      }, loopDetectionTimeout)
-    )
+    clearTimeout(detectionTimer)
+    detectionTimer = setTimeout(() => {
+      loopTracker.count = 0
+    }, loopDetectionTimeout)
 
     if (loopTracker.count >= loopMaxCalls) {
-      console.error(ERROR_INFINITE_LOOP)
+      console.error(
+        `Attempted to execute load function ${loopMaxCalls} or more times within a short period. Please wait before trying again.`
+      )
 
       loopTracker.coolingOff = true
-      loopTracker.timers.push(
-        setTimeout(() => {
-          loopTracker.coolingOff = false
-          loopTracker.count = 0
-        }, loopTimeout)
-      )
+      coolingOffTimer = setTimeout(() => {
+        loopTracker.coolingOff = false
+        loopTracker.count = 0
+      }, loopTimeout)
     }
   }
 
   async function attemptLoad() {
     if (
       loaderState.status === STATUS.COMPLETE ||
+      loopTracker.coolingOff ||
       (loaderState.status !== STATUS.READY && loaderState.status !== STATUS.ERROR)
     ) {
       return
@@ -88,45 +85,51 @@
 
     loaderState.status = STATUS.LOADING
 
-    if (!loopTracker.coolingOff) {
+    try {
       await triggerLoad()
       trackLoad()
-    }
-
-    if (loaderState.status === STATUS.LOADING) {
-      loaderState.isFirstLoad = false
-      loaderState.status = STATUS.READY
+    } catch (error) {
+      console.error(error)
+      loaderState.error()
+    } finally {
+      if (loaderState.status === STATUS.LOADING) {
+        loaderState.isFirstLoad = false
+        loaderState.status = STATUS.READY
+      }
     }
   }
 
-  $effect(() => {
-    if (!intersectionTarget) return
+  onDestroy(clearTimers)
 
-    const appliedIntersectionOptions = {
-      rootMargin: "0px 0px 200px 0px",
-      ...intersectionOptions
-    }
-    const obs = new IntersectionObserver(async (entries) => {
-      if (entries[0]?.isIntersecting) {
-        await attemptLoad()
+  function observeIntersection(node: HTMLElement) {
+    $effect(() => {
+      const appliedIntersectionOptions = {
+        rootMargin: "0px 0px 200px 0px",
+        ...intersectionOptions
       }
-    }, appliedIntersectionOptions)
-    obs.observe(intersectionTarget)
+      const obs = new IntersectionObserver((entries) => {
+        if (entries[0]?.isIntersecting) {
+          void attemptLoad()
+        }
+      }, appliedIntersectionOptions)
+      obs.observe(node)
 
-    return () => {
-      obs.disconnect()
-      loopTracker.timers.forEach((timer) => {
-        if (timer !== null) clearTimeout(timer)
-      })
-    }
-  })
+      return () => {
+        obs.disconnect()
+      }
+    })
+  }
 </script>
 
 <div class="infinite-loader-wrapper">
-  <!-- Render the users list items -->
   {@render children()}
 
-  <div class="infinite-intersection-target" bind:this={intersectionTarget}>
+  <div
+    class="infinite-intersection-target"
+    aria-busy={showLoading}
+    aria-live="polite"
+    {@attach observeIntersection}
+  >
     {#if showLoading}
       {#if loadingSnippet}
         {@render loadingSnippet()}
@@ -163,12 +166,13 @@
       {#if errorSnippet}
         {@render errorSnippet(attemptLoad)}
       {:else}
-        <div class="infinite-error">
+        <div class="infinite-error" role="alert">
           <div class="infinite-error__label">Oops, something went wrong</div>
           <button
             class="infinite-error__btn"
             disabled={loaderState.status === STATUS.COMPLETE}
             onclick={attemptLoad}
+            type="button"
           >
             Retry
           </button>

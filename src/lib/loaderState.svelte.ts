@@ -14,7 +14,6 @@ export class LoaderState {
     this.status = STATUS.READY
   }
   complete = () => {
-    if (this.isFirstLoad) this.isFirstLoad = false
     this.status = STATUS.COMPLETE
   }
   reset = () => {
